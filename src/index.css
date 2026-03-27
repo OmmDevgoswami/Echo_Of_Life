@@ -1,99 +1,111 @@
-/* Tailwind base */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* RESET + GLOBAL CONTROL */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  --ink: #0d0b12;
+  --deep: #130f1e;
+  --void: #07050e;
+  --parchment: #f5eddc;
+  --parchment-dim: #e8d8b8;
+  --gold: #c9a84c;
+  --gold-bright: #f0c96b;
+  --violet: #7b4fa6;
+  --violet-deep: #4a1f6b;
+  --rose: #c2556a;
+  --teal: #2e8b7a;
+  --ghost: rgba(245,237,220,0.07);
+  --glow-gold: 0 0 30px rgba(201,168,76,0.4);
+  --glow-violet: 0 0 40px rgba(123,79,166,0.5);
 }
 
-/* Prevent horizontal scroll */
-html, body {
-  overflow-x: hidden;
-  background: #0b0b12;
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
-  cursor: none;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Selection styling */
-::selection {
-  background: rgba(124, 58, 237, 0.3);
-  color: white;
-}
-
-/* Subtle grain overlay (zine + cinematic feel) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: url("https://grainy-gradients.vercel.app/noise.svg");
-  opacity: 0.05;
-  pointer-events: none;
-  z-index: 999;
-}
-
-/* Soft glow utility */
-.glow {
-  box-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
-}
-
-/* Text gradient utility */
-.text-glow {
-  background: linear-gradient(to bottom, #ffffff, #9ca3af);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Smooth transitions everywhere */
-* {
+*, *::before, *::after { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
   transition: all 0.3s ease;
 }
 
-html {
+html { 
+  scroll-behavior: smooth; 
   scroll-snap-type: y mandatory;
 }
 
-section {
-  scroll-snap-align: start;
-}
-
-/* Hide scrollbar properly */
-html, body {
+body {
+  background: var(--void);
+  color: var(--parchment);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
   overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-width: none; /* Firefox */
+  cursor: none;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+/* Hide scrollbar */
+html, body {
+  scrollbar-width: none !important;
+  overflow-y: scroll; /* keep scrolling enabled */
 }
-
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none !important;
+}
 * {
-  scrollbar-width: none;
+  scrollbar-width: none !important;
 }
-
 *::-webkit-scrollbar {
-  display: none;
+  display: none !important;
 }
 
-.hero-font {
-  font-family: 'Playfair Display', serif;
-  text-shadow: 0 0 25px rgba(255,255,255,0.08);
-  font-style: italic;
+
+/* Typography Utilities */
+.font-cinzel { font-family: 'Cinzel Decorative', serif; }
+.font-garamond { font-family: 'Cormorant Garamond', serif; }
+.font-fell { font-family: 'IM Fell English', serif; }
+
+.text-gold { color: var(--gold); }
+.text-gold-bright { color: var(--gold-bright); }
+.text-parchment-dim { color: var(--parchment-dim); }
+
+.glow-gold { filter: drop-shadow(var(--glow-gold)); }
+.glow-violet { filter: drop-shadow(var(--glow-violet)); }
+
+/* Title Gradient */
+.title-gradient {
+  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, var(--parchment) 70%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 40px rgba(201,168,76,0.4));
 }
 
-.zine-frame {
-  clip-path: polygon(
-    5% 0%, 95% 2%, 100% 95%, 2% 100%
-  );
+/* Shared Components */
+.divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; margin: 1.5rem auto 0; width: 300px;
 }
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.divider-glyph { color: var(--gold); font-size: 1.2rem; }
+
+/* Custom Cursor Styles */
+#cursor {
+  position: fixed; width: 20px; height: 20px;
+  border: 1.5px solid var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, border-color .2s, background .2s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  mix-blend-mode: difference;
+}
+#cursor-dot {
+  position: fixed; width: 5px; height: 5px;
+  background: var(--gold-bright); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+}
+
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .8s cubic-bezier(.23,1,.32,1), transform .8s cubic-bezier(.23,1,.32,1);
+}
+.reveal.visible { opacity: 1; transform: none; }

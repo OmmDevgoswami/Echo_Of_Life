@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 
 export default function CustomCursor() {
   const cursorRef = useRef(null);
+  const dotRef = useRef(null);
 
   const mouse = useRef({ x: 0, y: 0 });
-  const pos = useRef({ x: 0, y: 0 });
+  const posOuter = useRef({ x: 0, y: 0 });
+  const posInner = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const move = (e) => {
@@ -14,39 +16,52 @@ export default function CustomCursor() {
 
     window.addEventListener("mousemove", move);
 
+    const handleHover = () => {
+      if (cursorRef.current) cursorRef.current.style.transform = "translate(-50%, -50%) scale(2.5)";
+    };
+    const handleLeave = () => {
+      if (cursorRef.current) cursorRef.current.style.transform = "translate(-50%, -50%) scale(1)";
+    };
+
+    const links = document.querySelectorAll('a, button, .story-card, .book-spine');
+    links.forEach(l => {
+      l.addEventListener('mouseenter', handleHover);
+      l.addEventListener('mouseleave', handleLeave);
+    });
+
     const animate = () => {
-      // LERP (smooth follow)
-      pos.current.x += (mouse.current.x - pos.current.x) * 0.15;
-      pos.current.y += (mouse.current.y - pos.current.y) * 0.15;
+      // Smooth travel for outer circle
+      posOuter.current.x += (mouse.current.x - posOuter.current.x) * 0.15;
+      posOuter.current.y += (mouse.current.y - posOuter.current.y) * 0.15;
+
+      // Inner dot is faster
+      posInner.current.x = mouse.current.x;
+      posInner.current.y = mouse.current.y;
 
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `
-          translate(${pos.current.x}px, ${pos.current.y}px)
-          translate(-50%, -50%)
-        `;
+        cursorRef.current.style.left = `${posOuter.current.x}px`;
+        cursorRef.current.style.top = `${posOuter.current.y}px`;
+      }
+      if (dotRef.current) {
+        dotRef.current.style.left = `${posInner.current.x}px`;
+        dotRef.current.style.top = `${posInner.current.y}px`;
       }
 
       requestAnimationFrame(animate);
     };
 
-    animate();
+    const animateId = requestAnimationFrame(animate);
 
-    return () => window.removeEventListener("mousemove", move);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      cancelAnimationFrame(animateId);
+    };
   }, []);
 
   return (
-    <div
-    ref={cursorRef}
-    className="fixed top-0 left-0 pointer-events-none z-[9999]"
-    style={{
-      width: "14px",
-      height: "14px",
-      borderRadius: "50%",
-      background: "radial-gradient(circle, #c4b5fd, transparent 70%)",
-      filter: "blur(2px)",
-      onMouseEnter : "scale: 1.8", 
-      onMouseLeave : "scale: 1"
-    }}
-  />
+    <>
+      <div id="cursor" ref={cursorRef} />
+      <div id="cursor-dot" ref={dotRef} />
+    </>
   );
-}
+}

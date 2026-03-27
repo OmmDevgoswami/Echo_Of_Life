@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Inkbound Witch — Stories & Spells</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #0d0b12;
+    --deep: #130f1e;
+    --void: #07050e;
+    --parchment: #f5eddc;
+    --parchment-dim: #e8d8b8;
+    --gold: #c9a84c;
+    --gold-bright: #f0c96b;
+    --violet: #7b4fa6;
+    --violet-deep: #4a1f6b;
+    --rose: #c2556a;
+    --teal: #2e8b7a;
+    --ghost: rgba(245,237,220,0.07);
+    --glow-gold: 0 0 30px rgba(201,168,76,0.4);
+    --glow-violet: 0 0 40px rgba(123,79,166,0.5);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--parchment);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  #cursor {
+    position: fixed; width: 20px; height: 20px;
+    border: 1.5px solid var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .2s, height .2s, border-color .2s, background .2s;
+    mix-blend-mode: difference;
+  }
+  #cursor-dot {
+    position: fixed; width: 5px; height: 5px;
+    background: var(--gold-bright); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+  }
+  body:has(a:hover) #cursor,
+  body:has(button:hover) #cursor {
+    width: 40px; height: 40px;
+    border-color: var(--gold-bright);
+    background: rgba(201,168,76,0.1);
+  }
+
+  /* ── STAR CANVAS ── */
+  #starfield {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── FLOATING RUNES ── */
+  .rune-field {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    overflow: hidden;
+  }
+  .rune {
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    color: rgba(201,168,76,0.06);
+    font-size: 2.5rem;
+    animation: runeFloat linear infinite;
+    user-select: none;
+  }
+  @keyframes runeFloat {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── LAYOUT ── */
+  section { position: relative; z-index: 2; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .sigil {
+    width: 220px; height: 220px;
+    margin-bottom: 2rem;
+    position: relative;
+    animation: sigilSpin 40s linear infinite;
+  }
+  @keyframes sigilSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .sigil svg { filter: drop-shadow(var(--glow-gold)); }
+
+  .hero-eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp .8s .3s forwards;
+  }
+
+  h1.site-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2.2rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, var(--parchment) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,0.4));
+    opacity: 0;
+    animation: fadeUp .9s .5s forwards;
+    margin-bottom: 0.4em;
+  }
+
+  .hero-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--parchment-dim);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp .9s .8s forwards;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── CAT ILLUSTRATION ── */
+  #cat-hero {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: clamp(200px, 35vw, 480px);
+    pointer-events: none;
+    opacity: 0.85;
+    animation: catBreath 6s ease-in-out infinite;
+    filter: drop-shadow(-10px 0 60px rgba(123,79,166,0.5));
+  }
+  @keyframes catBreath {
+    0%,100% { transform: translateY(0) scaleX(1); }
+    50%      { transform: translateY(-12px) scaleX(1.01); }
+  }
+
+  .scroll-cue {
+    position: absolute; bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 1s 1.4s forwards;
+    color: var(--gold); font-size: 0.75rem; letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  .scroll-cue span { animation: bounce 2s infinite; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(8px); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: linear-gradient(to bottom, rgba(7,5,14,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .nav-brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--parchment-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: color .3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transition: transform .3s;
+  }
+  .nav-links a:hover { color: var(--gold-bright); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ── SECTION SHARED ── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .section-eyebrow {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  h2.section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--parchment);
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.25));
+  }
+  .divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1rem; margin: 1.5rem auto 0; width: 300px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .divider-glyph { color: var(--gold); font-size: 1.2rem; }
+
+  /* ── STORIES SECTION ── */
+  #stories {
+    padding: 7rem 2rem;
+    max-width: 1300px; margin: 0 auto;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .story-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(30,20,50,0.8), rgba(10,8,20,0.9));
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 2px;
+    padding: 2.2rem;
+    overflow: hidden;
+    transition: transform .4s cubic-bezier(0.23,1,0.32,1), border-color .4s, box-shadow .4s;
+    cursor: pointer;
+  }
+  .story-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(123,79,166,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .story-card::after {
+    content: attr(data-number);
+    position: absolute; top: 1.2rem; right: 1.5rem;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4rem; font-weight: 900;
+    color: rgba(201,168,76,0.06);
+    line-height: 1; pointer-events: none;
+  }
+  .story-card:hover {
+    transform: translateY(-8px) rotate(-0.3deg);
+    border-color: rgba(201,168,76,0.45);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(123,79,166,0.2);
+  }
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem; letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--violet); font-style: italic;
+    margin-bottom: 0.8rem;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .story-card h3 {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.45rem;
+    color: var(--parchment);
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+  }
+  .story-card p {
+    font-size: 0.95rem;
+    color: rgba(245,237,220,0.65);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: gap .3s, color .3s;
+  }
+  .card-link:hover { gap: 0.9rem; color: var(--gold-bright); }
+  .card-link .arrow { font-size: 1.1rem; }
+
+  /* ── POETRY SECTION ── */
+  #poetry {
+    padding: 7rem 2rem;
+    background: radial-gradient(ellipse at 50% 50%, rgba(74,31,107,0.15) 0%, transparent 70%);
+    position: relative;
+  }
+  #poetry::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .poetry-container {
+    max-width: 900px; margin: 0 auto;
+  }
+  .poem-feature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-bottom: 5rem;
+  }
+  .poem-feature:nth-child(even) { direction: rtl; }
+  .poem-feature:nth-child(even) > * { direction: ltr; }
+
+  .poem-text {
+    position: relative;
+    padding: 2.5rem 3rem;
+    background: rgba(13,11,18,0.7);
+    border-left: 2px solid var(--gold);
+  }
+  .poem-text blockquote {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.9;
+    color: var(--parchment);
+  }
+  .poem-text .poem-title {
+    display: block;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .poem-deco {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    padding: 7rem 2rem;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 6rem; align-items: center;
+  }
+  .about-portrait {
+    position: relative;
+  }
+  .portrait-frame {
+    width: 100%;
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;
+  }
+  .portrait-frame::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(145deg, var(--violet-deep), var(--ink));
+    z-index: 0;
+  }
+  .portrait-cat-svg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .portrait-frame::after {
+    content: '';
+    position: absolute;
+    top: 15px; left: 15px; right: -15px; bottom: -15px;
+    border: 1px solid rgba(201,168,76,0.3);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .about-text h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    color: var(--parchment);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+  .about-text h2 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .about-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: rgba(245,237,220,0.78);
+    margin-bottom: 1.2rem;
+  }
+  .stats-row {
+    display: flex; gap: 3rem; margin-top: 2.5rem;
+  }
+  .stat { text-align: center; }
+  .stat-number {
+    display: block;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem; color: var(--gold-bright);
+    filter: drop-shadow(0 0 10px rgba(201,168,76,0.4));
+  }
+  .stat-label {
+    font-size: 0.8rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--parchment-dim);
+    font-style: italic;
+  }
+
+  /* ── COLLECTION / BOOKS ── */
+  #collection {
+    padding: 7rem 2rem;
+    overflow: hidden;
+  }
+  .books-track {
+    display: flex; gap: 2rem;
+    animation: scrollBooks 30s linear infinite;
+    width: max-content;
+  }
+  .books-track:hover { animation-play-state: paused; }
+  @keyframes scrollBooks {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .book-spine {
+    width: 90px;
+    height: 280px;
+    display: flex; align-items: center; justify-content: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    border-radius: 3px;
+    padding: 1rem 0.7rem;
+    position: relative;
+    cursor: pointer;
+    transition: transform .3s;
+    flex-shrink: 0;
+  }
+  .book-spine:hover { transform: translateY(-15px) scaleX(1.08); }
+  .book-spine span {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
+  .book-spine::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.4), transparent 30%, transparent 70%, rgba(0,0,0,0.3));
+    border-radius: 3px; pointer-events: none;
+  }
+
+  /* ── CONTACT / CONNECT ── */
+  #contact {
+    padding: 7rem 2rem 10rem;
+    text-align: center;
+    position: relative;
+  }
+  .cauldron-wrap {
+    display: flex; justify-content: center;
+    margin-bottom: 3rem;
+  }
+  .contact-form {
+    max-width: 600px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 1.2rem;
+  }
+  .contact-form input,
+  .contact-form textarea {
+    background: rgba(20,15,35,0.8);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    padding: 1rem 1.3rem;
+    color: var(--parchment);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color .3s, box-shadow .3s;
+    resize: vertical;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    border-color: rgba(201,168,76,0.6);
+    box-shadow: 0 0 20px rgba(201,168,76,0.1);
+  }
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: rgba(245,237,220,0.3); font-style: italic;
+  }
+  .btn-send {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    background: linear-gradient(135deg, var(--violet-deep), var(--violet));
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-bright);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    padding: 1rem 2.5rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background .3s, box-shadow .3s, transform .2s;
+    align-self: center;
+  }
+  .btn-send:hover {
+    background: linear-gradient(135deg, var(--violet), rgba(123,79,166,0.9));
+    box-shadow: var(--glow-violet);
+    transform: translateY(-2px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 2;
+    background: var(--void);
+    border-top: 1px solid rgba(201,168,76,0.1);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(245,237,220,0.3);
+    letter-spacing: 0.2em;
+    font-style: italic;
+  }
+
+  /* ── MAGIC PARTICLES ON CLICK ── */
+  .spark {
+    position: fixed; width: 6px; height: 6px;
+    border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    background: var(--gold-bright);
+    animation: sparkFly .7s forwards;
+  }
+  @keyframes sparkFly {
+    to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+  }
+
+  /* ── SCROLLREVEAL UTILITY ── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .8s cubic-bezier(.23,1,.32,1), transform .8s cubic-bezier(.23,1,.32,1);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #about { grid-template-columns: 1fr; gap: 3rem; }
+    .poem-feature { grid-template-columns: 1fr; gap: 2rem; direction: ltr !important; }
+    .poems-container { padding: 0 1rem; }
+    #cat-hero { width: 55vw; opacity: 0.5; }
+    .stats-row { gap: 1.5rem; }
+    .poems-container .poem-feature:nth-child(even) { direction: ltr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- STARS -->
+<canvas id="starfield"></canvas>
+
+<!-- RUNES -->
+<div class="rune-field" id="runeField"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">✦ The Inkbound Witch</a>
+  <ul class="nav-links">
+    <li><a href="#stories">Stories</a></li>
+    <li><a href="#poetry">Poetry</a></li>
+    <li><a href="#about">The Witch</a></li>
+    <li><a href="#collection">Collection</a></li>
+    <li><a href="#contact">Whisper to Me</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <!-- SIGIL -->
+  <div class="sigil">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="220" height="220">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#glow)" stroke="#c9a84c" fill="none" stroke-width="0.8" opacity="0.9">
+        <!-- Outer rings -->
+        <circle cx="100" cy="100" r="95" stroke-dasharray="3 5"/>
+        <circle cx="100" cy="100" r="82" stroke-dasharray="1 4"/>
+        <circle cx="100" cy="100" r="68"/>
+        <!-- Inner geometry -->
+        <polygon points="100,15 188,68 188,132 100,185 12,132 12,68" stroke-width="0.6"/>
+        <polygon points="100,30 175,76 175,124 100,170 25,124 25,76" stroke-width="0.4" stroke-dasharray="2 3"/>
+        <!-- Star of 8 -->
+        <path d="M100,10 L110,90 L190,100 L110,110 L100,190 L90,110 L10,100 L90,90 Z" stroke-width="0.5"/>
+        <!-- Inner circle with cat sigil -->
+        <circle cx="100" cy="100" r="30"/>
+        <!-- Cat ears (sigil center) -->
+        <path d="M85,82 L78,70 L92,78 M115,82 L122,70 L108,78" stroke-width="1.2"/>
+        <!-- Cat face hints -->
+        <circle cx="93" cy="94" r="2" fill="#c9a84c" stroke="none"/>
+        <circle cx="107" cy="94" r="2" fill="#c9a84c" stroke="none"/>
+        <path d="M97,100 Q100,103 103,100" stroke-width="1"/>
+        <!-- Moon symbols around ring -->
+        <path d="M100,5 Q107,10 100,15 Q93,10 100,5" fill="#c9a84c" stroke="none"/>
+        <path d="M195,100 Q190,107 185,100 Q190,93 195,100" fill="#c9a84c" stroke="none"/>
+        <path d="M100,195 Q93,190 100,185 Q107,190 100,195" fill="#c9a84c" stroke="none"/>
+        <path d="M5,100 Q10,93 15,100 Q10,107 5,100" fill="#c9a84c" stroke="none"/>
+        <!-- Rune dots at vertices -->
+        <circle cx="100" cy="5" r="2.5" fill="#c9a84c" stroke="none"/>
+        <circle cx="188" cy="68" r="2.5" fill="#c9a84c" stroke="none"/>
+        <circle cx="188" cy="132" r="2.5" fill="#c9a84c" stroke="none"/>
+        <circle cx="100" cy="195" r="2.5" fill="#c9a84c" stroke="none"/>
+        <circle cx="12" cy="132" r="2.5" fill="#c9a84c" stroke="none"/>
+        <circle cx="12" cy="68" r="2.5" fill="#c9a84c" stroke="none"/>
+      </g>
+    </svg>
+  </div>
+
+  <p class="hero-eyebrow">Words Woven from Starlight & Shadow</p>
+  <h1 class="site-title">The Inkbound<br>Witch</h1>
+  <p class="hero-sub">Stories that haunt. Poetry that burns. Magic that lingers.</p>
+
+  <!-- SVG CAT illustration -->
+  <svg id="cat-hero" viewBox="0 0 380 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="catBodyGrad" cx="50%" cy="60%" r="50%">
+        <stop offset="0%" stop-color="#2a1845"/>
+        <stop offset="100%" stop-color="#0d0b12"/>
+      </radialGradient>
+      <radialGradient id="eyeGrad" cx="50%" cy="40%" r="50%">
+        <stop offset="0%" stop-color="#f0c96b"/>
+        <stop offset="60%" stop-color="#c9a84c"/>
+        <stop offset="100%" stop-color="#7b4fa6"/>
+      </radialGradient>
+      <filter id="catGlow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <!-- Witch hat -->
+    <g fill="#0d0b12" stroke="#c9a84c" stroke-width="1.5">
+      <polygon points="190,20 140,160 240,160"/>
+      <ellipse cx="190" cy="163" rx="65" ry="16"/>
+    </g>
+    <!-- Hat band -->
+    <rect x="145" y="153" width="90" height="14" rx="3" fill="#4a1f6b" stroke="#c9a84c" stroke-width="1"/>
+    <!-- Hat buckle -->
+    <rect x="182" y="156" width="16" height="10" rx="1" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+    <!-- Stars on hat -->
+    <text x="165" y="120" fill="#c9a84c" font-size="14" opacity="0.8">★</text>
+    <text x="200" y="95" fill="#c9a84c" font-size="10" opacity="0.6">✦</text>
+    <text x="178" y="75" fill="#c9a84c" font-size="8" opacity="0.5">✧</text>
+    <!-- Body -->
+    <ellipse cx="190" cy="360" rx="110" ry="130" fill="url(#catBodyGrad)" stroke="#2a1845" stroke-width="1"/>
+    <!-- Head -->
+    <ellipse cx="190" cy="230" rx="85" ry="80" fill="url(#catBodyGrad)" stroke="#2a1845" stroke-width="1"/>
+    <!-- Ears -->
+    <polygon points="120,175 100,135 150,168" fill="#0d0b12" stroke="#c9a84c" stroke-width="1"/>
+    <polygon points="260,175 280,135 230,168" fill="#0d0b12" stroke="#c9a84c" stroke-width="1"/>
+    <!-- Inner ears -->
+    <polygon points="122,172 110,145 147,166" fill="#4a1f6b" opacity="0.6"/>
+    <polygon points="258,172 270,145 233,166" fill="#4a1f6b" opacity="0.6"/>
+    <!-- Eyes -->
+    <ellipse cx="163" cy="225" rx="22" ry="18" fill="url(#eyeGrad)" filter="url(#catGlow)"/>
+    <ellipse cx="217" cy="225" rx="22" ry="18" fill="url(#eyeGrad)" filter="url(#catGlow)"/>
+    <!-- Pupils (slit) -->
+    <ellipse cx="163" cy="225" rx="5" ry="16" fill="#0d0b12"/>
+    <ellipse cx="217" cy="225" rx="5" ry="16" fill="#0d0b12"/>
+    <!-- Eye shine -->
+    <circle cx="158" cy="219" r="4" fill="white" opacity="0.8"/>
+    <circle cx="212" cy="219" r="4" fill="white" opacity="0.8"/>
+    <!-- Nose -->
+    <polygon points="190,248 185,255 195,255" fill="#c2556a"/>
+    <!-- Mouth -->
+    <path d="M185,255 Q190,262 195,255" fill="none" stroke="#c2556a" stroke-width="1.5"/>
+    <path d="M172,255 Q178,260 185,255" fill="none" stroke="#4a1f6b" stroke-width="1.2"/>
+    <path d="M195,255 Q202,260 208,255" fill="none" stroke="#4a1f6b" stroke-width="1.2"/>
+    <!-- Whiskers -->
+    <g stroke="rgba(245,237,220,0.5)" stroke-width="0.8">
+      <line x1="110" y1="248" x2="168" y2="252"/>
+      <line x1="108" y1="258" x2="168" y2="258"/>
+      <line x1="112" y1="268" x2="168" y2="264"/>
+      <line x1="212" y1="252" x2="270" y2="248"/>
+      <line x1="212" y1="258" x2="272" y2="258"/>
+      <line x1="212" y1="264" x2="268" y2="268"/>
+    </g>
+    <!-- Cloak / collar -->
+    <path d="M105,295 Q190,320 275,295 L265,430 Q190,460 115,430 Z" fill="#4a1f6b" opacity="0.6"/>
+    <!-- Rune on cloak -->
+    <text x="175" y="380" fill="#c9a84c" font-size="22" opacity="0.5" font-family="serif">ᚹ</text>
+    <!-- Moon pendant -->
+    <circle cx="190" cy="305" r="10" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+    <path d="M186,302 Q192,306 186,312 Q178,307 186,302" fill="#c9a84c" opacity="0.8"/>
+    <!-- Tail -->
+    <path d="M300,400 Q360,360 350,300 Q340,250 310,280 Q290,300 305,340" fill="none" stroke="#2a1845" stroke-width="22" stroke-linecap="round"/>
+    <path d="M300,400 Q360,360 350,300 Q340,250 310,280 Q290,300 305,340" fill="none" stroke="#0d0b12" stroke-width="18" stroke-linecap="round"/>
+    <!-- Book -->
+    <rect x="130" y="435" width="120" height="75" rx="3" fill="#1a0d2e" stroke="#c9a84c" stroke-width="1.2"/>
+    <rect x="135" y="439" width="4" height="67" fill="#4a1f6b"/>
+    <line x1="145" y1="455" x2="240" y2="455" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+    <line x1="145" y1="465" x2="240" y2="465" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+    <line x1="145" y1="475" x2="220" y2="475" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+    <line x1="145" y1="485" x2="230" y2="485" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+    <!-- Paws -->
+    <ellipse cx="160" cy="498" rx="28" ry="14" fill="#0d0b12" stroke="#2a1845" stroke-width="1"/>
+    <ellipse cx="220" cy="498" rx="28" ry="14" fill="#0d0b12" stroke="#2a1845" stroke-width="1"/>
+    <!-- Paw toes -->
+    <g fill="#1a0d2e">
+      <ellipse cx="147" cy="494" rx="7" ry="5"/>
+      <ellipse cx="160" cy="491" rx="7" ry="5"/>
+      <ellipse cx="173" cy="494" rx="7" ry="5"/>
+      <ellipse cx="207" cy="494" rx="7" ry="5"/>
+      <ellipse cx="220" cy="491" rx="7" ry="5"/>
+      <ellipse cx="233" cy="494" rx="7" ry="5"/>
+    </g>
+    <!-- Floating sparkles around cat -->
+    <g fill="#c9a84c" opacity="0.7" filter="url(#catGlow)">
+      <text x="60" y="200" font-size="16">✦</text>
+      <text x="295" y="185" font-size="12">✧</text>
+      <text x="310" y="250" font-size="18">★</text>
+      <text x="55" y="310" font-size="10">✦</text>
+      <text x="50" y="380" font-size="14">✧</text>
+    </g>
+  </svg>
+
+  <div class="scroll-cue">
+    <span>↓</span>
+    scroll to enter
+  </div>
+</section>
+
+<!-- ═══════════════ STORIES ═══════════════ -->
+<section id="stories">
+  <div class="section-header reveal">
+    <span class="section-eyebrow">— woven in moonlight —</span>
+    <h2 class="section-title">Tales from the Dark</h2>
+    <div class="divider"><span class="divider-glyph">✦</span></div>
+  </div>
+
+  <div class="stories-grid">
+    <div class="story-card reveal" data-number="I" style="transition-delay:.1s">
+      <span class="card-tag">★ Short Story · Dark Fantasy</span>
+      <h3>The Cat That Ate the Moon</h3>
+      <p>On the night Persephone climbed her silver ladder, she found something had already taken a bite from the crescent's edge. Two amber eyes blinked back from the darkness.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+    <div class="story-card reveal" data-number="II" style="transition-delay:.2s">
+      <span class="card-tag">★ Novella · Gothic Romance</span>
+      <h3>Ink & Hemlock</h3>
+      <p>A scribe who bleeds ink when she writes the truth. A librarian who has memorised every book never written. A love story that rewrites itself every full moon.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+    <div class="story-card reveal" data-number="III" style="transition-delay:.3s">
+      <span class="card-tag">★ Flash Fiction · Surreal</span>
+      <h3>The Dictionary of Unfinished Spells</h3>
+      <p>Between the words "luminous" and "lunatic" there lives an entry no lexicographer has dared define — and yet every witch knows it by heart.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+    <div class="story-card reveal" data-number="IV" style="transition-delay:.4s">
+      <span class="card-tag">★ Short Story · Literary Fiction</span>
+      <h3>Seven Ways to Name a Storm</h3>
+      <p>She kept her grandmother's names in a box under the bed. Every spring she'd open the lid and let one out into the garden, and it would bloom into something extraordinary.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+    <div class="story-card reveal" data-number="V" style="transition-delay:.5s">
+      <span class="card-tag">★ Serial · Folklore</span>
+      <h3>The Witch Who Swallowed a Library</h3>
+      <p>She consumed three thousand books in the year of the great forgetting. Now words leak from her skin when it rains, and entire chapters bloom in her footprints.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+    <div class="story-card reveal" data-number="VI" style="transition-delay:.6s">
+      <span class="card-tag">★ Essay · Memoir</span>
+      <h3>On the Practice of Becoming Ink</h3>
+      <p>Some writers find their voice. I found mine drowned at the bottom of a bottle of violet ink, singing a lullaby to the pages I had not yet written.</p>
+      <a href="#" class="card-link">Read the story <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ POETRY ═══════════════ -->
+<section id="poetry">
+  <div style="max-width:1000px; margin:0 auto">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">— spells cast in stanzas —</span>
+      <h2 class="section-title">The Poetry Grimoire</h2>
+      <div class="divider"><span class="divider-glyph">✧</span></div>
+    </div>
+
+    <div class="poem-feature reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:5rem;">
+      <div class="poem-text">
+        <span class="poem-title">— I. FAMILIAR —</span>
+        <blockquote>
+          She does not fetch, nor heel, nor stay —<br>
+          my familiar keeps her own counsel,<br>
+          sharpens her claws on my verbs,<br>
+          and sleeps, coiled, inside<br>
+          the unfinished sentence<br>
+          I cannot bring myself to end.
+        </blockquote>
+      </div>
+      <div class="poem-deco">
+        <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="moonGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" fill="url(#moonGrad)" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 6"/>
+          <circle cx="100" cy="100" r="60" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
+          <!-- Crescent moon -->
+          <circle cx="100" cy="100" r="45" fill="#c9a84c" opacity="0.25"/>
+          <circle cx="118" cy="92" r="38" fill="#0d0b12"/>
+          <!-- Stars -->
+          <text x="30" y="50" fill="#c9a84c" font-size="12" opacity="0.8">✦</text>
+          <text x="150" y="40" fill="#c9a84c" font-size="8" opacity="0.6">✧</text>
+          <text x="160" y="155" fill="#c9a84c" font-size="14" opacity="0.7">★</text>
+          <text x="25" y="160" fill="#c9a84c" font-size="10" opacity="0.5">✦</text>
+          <text x="95" y="180" fill="#c9a84c" font-size="8" opacity="0.6">✧</text>
+          <!-- Cat silhouette on moon -->
+          <path d="M85,125 Q78,108 84,95 Q78,88 74,80 Q82,85 86,88 Q90,82 100,80 Q110,82 114,88 Q118,85 126,80 Q122,88 116,95 Q122,108 115,125 Q100,132 85,125 Z" fill="#c9a84c" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="poem-feature reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:5rem;direction:rtl">
+      <div class="poem-text" style="direction:ltr">
+        <span class="poem-title">— II. CAULDRON —</span>
+        <blockquote>
+          Into the pot: three syllables<br>
+          stolen from a sleeping god,<br>
+          the colour of the hour<br>
+          before dawn admits its name,<br>
+          and one remembered grief<br>
+          pressed like a violet between pages<br>
+          of a book you'll never finish.
+        </blockquote>
+      </div>
+      <div class="poem-deco" style="direction:ltr">
+        <svg viewBox="0 0 200 220" width="200" height="220" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cauldron -->
+          <ellipse cx="100" cy="80" rx="68" ry="22" fill="#1a0d2e" stroke="#c9a84c" stroke-width="1.2"/>
+          <path d="M32,80 Q20,170 100,185 Q180,170 168,80 Z" fill="#0d0b12" stroke="#c9a84c" stroke-width="1.2"/>
+          <!-- Legs -->
+          <line x1="60" y1="182" x2="55" y2="210" stroke="#c9a84c" stroke-width="2"/>
+          <line x1="100" y1="185" x2="100" y2="215" stroke="#c9a84c" stroke-width="2"/>
+          <line x1="140" y1="182" x2="145" y2="210" stroke="#c9a84c" stroke-width="2"/>
+          <!-- Liquid -->
+          <ellipse cx="100" cy="78" rx="60" ry="16" fill="#4a1f6b" opacity="0.8"/>
+          <!-- Bubbles -->
+          <circle cx="85" cy="68" r="5" fill="#7b4fa6" opacity="0.6"><animate attributeName="cy" values="68;55;68" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/></circle>
+          <circle cx="105" cy="62" r="7" fill="#7b4fa6" opacity="0.5"><animate attributeName="cy" values="62;48;62" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="2.5s" repeatCount="indefinite"/></circle>
+          <circle cx="120" cy="70" r="4" fill="#c9a84c" opacity="0.4"><animate attributeName="cy" values="70;57;70" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.4;0;0.4" dur="1.8s" repeatCount="indefinite"/></circle>
+          <!-- Steam -->
+          <path d="M80,60 Q75,45 80,30 Q85,15 80,0" fill="none" stroke="rgba(245,237,220,0.15)" stroke-width="2"><animate attributeName="opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite"/></path>
+          <path d="M100,58 Q95,43 100,28" fill="none" stroke="rgba(245,237,220,0.12)" stroke-width="2"><animate attributeName="opacity" values="0.12;0.35;0.12" dur="3.5s" repeatCount="indefinite"/></path>
+          <path d="M120,60 Q125,45 120,30" fill="none" stroke="rgba(245,237,220,0.1)" stroke-width="2"><animate attributeName="opacity" values="0.1;0.3;0.1" dur="2.8s" repeatCount="indefinite"/></path>
+          <!-- Stars -->
+          <text x="30" y="30" fill="#c9a84c" font-size="10" opacity="0.6">✦</text>
+          <text x="160" y="25" fill="#c9a84c" font-size="8" opacity="0.5">✧</text>
+          <!-- Rune on cauldron -->
+          <text x="90" y="145" fill="#c9a84c" font-size="18" opacity="0.3" font-family="serif">ᛗ</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="poem-feature reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+      <div class="poem-text">
+        <span class="poem-title">— III. THE WRITER —</span>
+        <blockquote>
+          I am not the story.<br>
+          I am the space<br>
+          the story falls into —<br>
+          the held breath<br>
+          between the last word<br>
+          and the page turning.<br><br>
+          Even silence<br>
+          is a kind of grammar.
+        </blockquote>
+      </div>
+      <div class="poem-deco">
+        <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Open book -->
+          <path d="M20,60 Q100,45 180,60 L175,155 Q100,140 20,155 Z" fill="#0d0b12" stroke="#c9a84c" stroke-width="1"/>
+          <line x1="100" y1="47" x2="100" y2="153" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+          <!-- Left page lines -->
+          <g stroke="#c9a84c" stroke-width="0.5" opacity="0.3">
+            <line x1="35" y1="80" x2="90" y2="77"/>
+            <line x1="35" y1="90" x2="90" y2="87"/>
+            <line x1="35" y1="100" x2="90" y2="97"/>
+            <line x1="35" y1="110" x2="90" y2="107"/>
+            <line x1="35" y1="120" x2="90" y2="117"/>
+            <line x1="35" y1="130" x2="80" y2="128"/>
+          </g>
+          <!-- Right page lines -->
+          <g stroke="#c9a84c" stroke-width="0.5" opacity="0.3">
+            <line x1="110" y1="77" x2="165" y2="80"/>
+            <line x1="110" y1="87" x2="165" y2="90"/>
+            <line x1="110" y1="97" x2="165" y2="100"/>
+            <line x1="110" y1="107" x2="165" y2="110"/>
+            <line x1="110" y1="117" x2="165" y2="120"/>
+            <line x1="120" y1="128" x2="165" y2="130"/>
+          </g>
+          <!-- Quill -->
+          <path d="M95,155 Q80,130 100,90 Q115,60 130,40" fill="none" stroke="#c9a84c" stroke-width="1.2"/>
+          <path d="M130,40 Q145,55 125,70 Q130,40 130,40" fill="#c9a84c" opacity="0.6"/>
+          <!-- Ink drop -->
+          <circle cx="97" cy="152" r="4" fill="#7b4fa6" opacity="0.8"/>
+          <!-- Stars -->
+          <text x="10" y="30" fill="#c9a84c" font-size="14" opacity="0.7">★</text>
+          <text x="170" y="35" fill="#c9a84c" font-size="10" opacity="0.5">✦</text>
+          <text x="90" y="185" fill="#c9a84c" font-size="12" opacity="0.6">✧</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+<section id="about">
+  <div class="about-portrait reveal">
+    <div class="portrait-frame">
+      <div class="portrait-cat-svg">
+        <svg viewBox="0 0 300 380" width="300" height="380" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="portraitBg" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#3a1f6a" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#0d0b12" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="300" height="380" fill="url(#portraitBg)"/>
+          <!-- Desk -->
+          <rect x="20" y="260" width="260" height="18" rx="3" fill="#1a0d2e" stroke="#c9a84c" stroke-width="0.8"/>
+          <!-- Books on desk -->
+          <rect x="30" y="220" width="20" height="42" rx="1" fill="#4a1f6b" stroke="#c9a84c" stroke-width="0.5"/>
+          <rect x="52" y="230" width="16" height="32" rx="1" fill="#2e5b4a" stroke="#c9a84c" stroke-width="0.5"/>
+          <rect x="70" y="225" width="22" height="37" rx="1" fill="#6b2020" stroke="#c9a84c" stroke-width="0.5"/>
+          <!-- Candle -->
+          <rect x="230" y="245" width="10" height="20" rx="1" fill="#e8d8b8" opacity="0.8"/>
+          <ellipse cx="235" cy="244" rx="5" ry="3" fill="#c9a84c" opacity="0.6"/>
+          <path d="M235,244 Q237,232 235,225 Q233,232 235,244" fill="#f0c96b" opacity="0.9"><animate attributeName="d" values="M235,244 Q237,232 235,225 Q233,232 235,244;M235,244 Q238,230 235,224 Q232,230 235,244;M235,244 Q237,232 235,225 Q233,232 235,244" dur="1.5s" repeatCount="indefinite"/></path>
+          <!-- Glow around candle -->
+          <circle cx="235" cy="235" r="25" fill="#c9a84c" opacity="0.05">
+            <animate attributeName="opacity" values="0.05;0.12;0.05" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Cat sitting at desk, reading -->
+          <!-- Body -->
+          <ellipse cx="160" cy="220" rx="55" ry="50" fill="#1a0f2e"/>
+          <!-- Head -->
+          <circle cx="160" cy="160" r="45" fill="#1a0f2e"/>
+          <!-- Ears -->
+          <polygon points="128,128 118,102 145,120" fill="#1a0f2e" stroke="#c9a84c" stroke-width="0.5"/>
+          <polygon points="192,128 202,102 175,120" fill="#1a0f2e" stroke="#c9a84c" stroke-width="0.5"/>
+          <polygon points="130,124 122,106 143,118" fill="#4a1f6b" opacity="0.4"/>
+          <polygon points="190,124 198,106 177,118" fill="#4a1f6b" opacity="0.4"/>
+          <!-- Eyes (looking down at book) -->
+          <path d="M142,160 Q150,170 158,160" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+          <path d="M162,160 Q170,170 178,160" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+          <!-- Nose -->
+          <polygon points="160,174 157,178 163,178" fill="#c2556a"/>
+          <!-- Open book on desk in front of cat -->
+          <path d="M100,258 Q160,248 220,258 L218,275 Q160,265 102,275 Z" fill="#0d0b12" stroke="#c9a84c" stroke-width="0.8"/>
+          <line x1="160" y1="249" x2="160" y2="274" stroke="#c9a84c" stroke-width="0.6" opacity="0.5"/>
+          <!-- Paws on book -->
+          <ellipse cx="135" cy="268" rx="18" ry="9" fill="#1a0f2e" stroke="#2a1845" stroke-width="0.5"/>
+          <ellipse cx="185" cy="268" rx="18" ry="9" fill="#1a0f2e" stroke="#2a1845" stroke-width="0.5"/>
+          <!-- Glasses! (genius element) -->
+          <circle cx="147" cy="162" r="12" fill="none" stroke="#c9a84c" stroke-width="1.2" opacity="0.7"/>
+          <circle cx="173" cy="162" r="12" fill="none" stroke="#c9a84c" stroke-width="1.2" opacity="0.7"/>
+          <line x1="135" y1="162" x2="120" y2="164" stroke="#c9a84c" stroke-width="1" opacity="0.7"/>
+          <line x1="159" y1="162" x2="161" y2="162" stroke="#c9a84c" stroke-width="1" opacity="0.7"/>
+          <line x1="185" y1="162" x2="200" y2="164" stroke="#c9a84c" stroke-width="1" opacity="0.7"/>
+          <!-- Sparkles -->
+          <text x="40" y="80" fill="#c9a84c" font-size="14" opacity="0.6">✦</text>
+          <text x="250" y="70" fill="#c9a84c" font-size="10" opacity="0.5">✧</text>
+          <text x="260" y="200" fill="#c9a84c" font-size="12" opacity="0.4">★</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-text reveal" style="transition-delay:.2s">
+    <h2>A Genius who writes<br>in <em>spells & starlight</em></h2>
+    <p>Welcome to this corner of the internet that belongs entirely to the dark, the beautiful, and the strange. I am a writer, a collector of moonlit images, a practitioner of stories that refuse to behave.</p>
+    <p>My work lives in the space between folk tale and literary fiction, between the line that scans and the line that bleeds. If you've ever felt that the right sentence could rearrange the furniture of your soul — you've come to the right library.</p>
+    <p>My familiar judges every draft. She has excellent taste and no mercy.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-number">47</span>
+        <span class="stat-label">Stories</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">120+</span>
+        <span class="stat-label">Poems</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">3</span>
+        <span class="stat-label">Chapbooks</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">∞</span>
+        <span class="stat-label">Drafts</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ COLLECTION ═══════════════ -->
+<section id="collection" style="padding:7rem 0; overflow:hidden;">
+  <div class="section-header reveal" style="padding:0 2rem; margin-bottom:4rem;">
+    <span class="section-eyebrow">— bound in night —</span>
+    <h2 class="section-title">The Shelf of Shadows</h2>
+    <div class="divider"><span class="divider-glyph">★</span></div>
+  </div>
+  <div style="overflow:hidden; padding:1rem 0">
+    <div class="books-track" id="booksTrack"></div>
+  </div>
+  <p style="text-align:center; color:rgba(245,237,220,0.35); font-style:italic; font-size:0.85rem; letter-spacing:0.2em; margin-top:2rem;">hover to pause the procession</p>
+</section>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section id="contact">
+  <div class="section-header reveal">
+    <span class="section-eyebrow">— send a raven —</span>
+    <h2 class="section-title">Whisper to the Witch</h2>
+    <div class="divider"><span class="divider-glyph">✦</span></div>
+  </div>
+
+  <div class="cauldron-wrap">
+    <svg viewBox="0 0 120 90" width="120" height="90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15,35 Q10,75 60,82 Q110,75 105,35 Z" fill="#0d0b12" stroke="#c9a84c" stroke-width="1"/>
+      <ellipse cx="60" cy="35" rx="45" ry="14" fill="#1a0d2e" stroke="#c9a84c" stroke-width="1"/>
+      <ellipse cx="60" cy="33" rx="38" ry="10" fill="#4a1f6b" opacity="0.7"/>
+      <circle cx="45" cy="28" r="3" fill="#7b4fa6" opacity="0.7"><animate attributeName="cy" values="28;20;28" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="65" cy="25" r="5" fill="#7b4fa6" opacity="0.6"><animate attributeName="cy" values="25;15;25" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" repeatCount="indefinite"/></circle>
+      <circle cx="78" cy="29" r="3" fill="#c9a84c" opacity="0.5"><animate attributeName="cy" values="29;19;29" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="1.8s" repeatCount="indefinite"/></circle>
+      <line x1="30" y1="78" x2="25" y2="90" stroke="#c9a84c" stroke-width="1.5"/>
+      <line x1="60" y1="82" x2="60" y2="90" stroke="#c9a84c" stroke-width="1.5"/>
+      <line x1="90" y1="78" x2="95" y2="90" stroke="#c9a84c" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+    <input type="text" placeholder="Your name (a pseudonym is perfectly acceptable)" required>
+    <input type="email" placeholder="Your owl's return address (email)" required>
+    <textarea rows="5" placeholder="Your message, spell, or riddle..."></textarea>
+    <button type="submit" class="btn-send">✦ Cast the Message ✦</button>
+  </form>
+
+  <p id="form-success" style="display:none; text-align:center; color:var(--gold); font-style:italic; margin-top:2rem; font-size:1.1rem;">
+    Your words have been received. The cat is reading them now.
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© The Inkbound Witch · Written by hand, hexed by heart · All stories, all spells, all rights reserved</p>
+  <p style="margin-top:0.5rem; font-size:0.7rem; opacity:0.5;">✦ ✧ ★ ✦ ✧ ★ ✦</p>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const dot = document.getElementById('cursor-dot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+(function animate(){ cx+=(mx-cx)*.12; cy+=(my-cy)*.12; cursor.style.left=cx+'px'; cursor.style.top=cy+'px'; requestAnimationFrame(animate); })();
+
+// ── SPARKLES ON CLICK ──
+document.addEventListener('click', e => {
+  for(let i=0;i<12;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const angle=Math.random()*Math.PI*2;
+    const dist=40+Math.random()*60;
+    s.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;background:${Math.random()>.5?'#c9a84c':'#7b4fa6'};animation-duration:${.5+Math.random()*.5}s`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  }
+});
+
+// ── STARFIELD ──
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars=[];
+function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+function initStars(){
+  stars=[];
+  for(let i=0;i<200;i++){
+    stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.3,speed:Math.random()*.3+.05,twinkle:Math.random()*Math.PI*2,twinkleSpeed:Math.random()*.02+.005});
+  }
+}
+initStars();
+function drawStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.twinkle+=s.twinkleSpeed;
+    const alpha=.3+.7*(Math.sin(s.twinkle)*.5+.5);
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(201,168,76,${alpha})`;
+    ctx.fill();
+    s.y-=s.speed;
+    if(s.y<-5){ s.y=canvas.height+5; s.x=Math.random()*canvas.width; }
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// ── RUNES ──
+const runes='ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ✦✧★⊕⊗∞◈';
+const runeField = document.getElementById('runeField');
+for(let i=0;i<20;i++){
+  const r=document.createElement('div');
+  r.className='rune';
+  r.textContent=runes[Math.floor(Math.random()*runes.length)];
+  r.style.left=Math.random()*100+'vw';
+  r.style.animationDuration=(20+Math.random()*30)+'s';
+  r.style.animationDelay=(Math.random()*20)+'s';
+  r.style.fontSize=(1.5+Math.random()*2)+'rem';
+  runeField.appendChild(r);
+}
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ── BOOKS TRACK ──
+const bookData=[
+  {title:'The Moonlit Bestiary',color:'#2a1845',text:'#c9a84c'},
+  {title:'Hexes for the Heartbroken',color:'#1a2e1a',text:'#6bbd8c'},
+  {title:'A Grammar of Storms',color:'#2e1a1a',text:'#c26b6b'},
+  {title:'The Familiar\'s Compendium',color:'#1a1a2e',text:'#6b8cc2'},
+  {title:'Ink & Hemlock',color:'#2e2a1a',text:'#c9a84c'},
+  {title:'Songs for the Unwanted Moon',color:'#1a2830',text:'#6bc9c9'},
+  {title:'Thirty-Three Lies About Wolves',color:'#2e1a28',text:'#c96bbd'},
+  {title:'The Witch\'s Concordance',color:'#281a1a',text:'#c98c6b'},
+  {title:'Cartography of Lost Spells',color:'#1a2820',text:'#84c96b'},
+  {title:'The Night Taxonomy',color:'#1f1a2e',text:'#a88bc9'},
+];
+const track = document.getElementById('booksTrack');
+// Duplicate for infinite scroll
+[...bookData,...bookData].forEach(b=>{
+  const el=document.createElement('div');
+  el.className='book-spine';
+  el.style.background=b.color;
+  el.style.border=`1px solid ${b.text}30`;
+  el.innerHTML=`<span style="color:${b.text}">${b.title}</span>`;
+  track.appendChild(el);
+});
+
+// ── FORM ──
+function handleSubmit(e){
+  e.preventDefault();
+  document.getElementById('form-success').style.display='block';
+  e.target.style.display='none';
+}
+</script>
+</body>
+</html>

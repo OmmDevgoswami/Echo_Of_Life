@@ -23,7 +23,7 @@ export default function Stars() {
               top: Math.random() * 100 + "%",
               left: Math.random() * 100 + "%",
               position: "absolute",
-              background: "#c4b5fd",
+              background: "#c9a84c",
               borderRadius: "50%",
               filter: "blur(1px)"
             }}

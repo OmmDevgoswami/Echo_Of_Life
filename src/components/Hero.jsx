@@ -1,109 +1,90 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
-import SplitTextReveal from "./SplitTextReveal";
-import Cat from "./Cat";
 import Stars from "./Stars";
+import Cat from "./Cat";
 
 export default function Hero() {
-  const textRef = useRef(null);
-
-  const handleMove = (e) => {
-    if (!textRef.current) return;
-
-    const rect = textRef.current.getBoundingClientRect();
-
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-
-    // ✨ Whole text slight movement
-    textRef.current.style.transform = `translate(${x * 0.02}px, ${y * 0.02}px)`;
-
-    // ✨ Glow intensity based on distance
-    const distance = Math.sqrt(x * x + y * y);
-    const intensity = Math.max(0, 1 - distance / 300);
-
-    textRef.current.style.textShadow = `
-      0 0 ${20 + intensity * 40}px rgba(124,58,237,${0.2 + intensity * 0.4})
-    `;
-
-    // ✨ Letter-level interaction (magic part)
-    const chars = textRef.current.querySelectorAll(".char");
-
-    chars.forEach((char) => {
-      const rect = char.getBoundingClientRect();
-
-      const dx = e.clientX - (rect.left + rect.width / 2);
-      const dy = e.clientY - (rect.top + rect.height / 2);
-
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const strength = Math.max(0, 1 - dist / 120);
-
-      char.style.transform = `
-        translate(${dx * 0.02 * strength}px, ${dy * 0.02 * strength}px)
-      `;
-    });
-  };
-
-  const reset = () => {
-    if (!textRef.current) return;
-
-    textRef.current.style.transform = "translate(0px, 0px)";
-    textRef.current.style.textShadow = "0 0 20px rgba(255,255,255,0.08)";
-
-    const chars = textRef.current.querySelectorAll(".char");
-    chars.forEach((char) => {
-      char.style.transform = "translate(0px, 0px)";
-    });
-  };
-
   return (
-    <section className="h-screen flex flex-col justify-center items-center relative overflow-hidden">
-      
+    <section id="hero" className="min-h-screen flex flex-col items-center justify-center text-center p-8 overflow-hidden relative">
       <Stars />
 
-      {/* Background glow */}
-      <div className="absolute w-[600px] h-[600px] bg-purple-700 opacity-20 blur-[160px]" />
-
-      {/* Text */}
-      <div
-        ref={textRef}
-        onMouseMove={handleMove}
-        onMouseLeave={reset}
-        className="text-center max-w-2xl leading-relaxed transition-transform duration-300"
+      {/* SIGIL */}
+      <motion.div 
+        initial={{ rotate: 0 }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        className="sigil w-[220px] h-[220px] mb-8 relative z-10 glow-gold"
       >
-        <SplitTextReveal
-          text="Some stories are not written… they are felt."
-          className="hero-font text-3xl md:text-5xl"
-        />
-      </div>
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#glow)" stroke="#c9a84c" fill="none" strokeWidth="0.8" opacity="0.9">
+            <circle cx="100" cy="100" r="95" strokeDasharray="3 5"/>
+            <circle cx="100" cy="100" r="82" strokeDasharray="1 4"/>
+            <circle cx="100" cy="100" r="68"/>
+            <polygon points="100,15 188,68 188,132 100,185 12,132 12,68" strokeWidth="0.6"/>
+            <polygon points="100,30 175,76 175,124 100,170 25,124 25,76" strokeWidth="0.4" strokeDasharray="2 3"/>
+            <path d="M100,10 L110,90 L190,100 L110,110 L100,190 L90,110 L10,100 L90,90 Z" strokeWidth="0.5"/>
+            <circle cx="100" cy="100" r="30"/>
+            <path d="M85,82 L78,70 L92,78 M115,82 L122,70 L108,78" strokeWidth="1.2"/>
+            <circle cx="93" cy="94" r="2" fill="#c9a84c" stroke="none"/>
+            <circle cx="107" cy="94" r="2" fill="#c9a84c" stroke="none"/>
+            <path d="M97,100 Q100,103 103,100" strokeWidth="1"/>
+            <path d="M100,5 Q107,10 100,15 Q93,10 100,5" fill="#c9a84c" stroke="none"/>
+            <path d="M195,100 Q190,107 185,100 Q190,93 195,100" fill="#c9a84c" stroke="none"/>
+            <path d="M100,195 Q93,190 100,185 Q107,190 100,195" fill="#c9a84c" stroke="none"/>
+            <path d="M5,100 Q10,93 15,100 Q10,107 5,100" fill="#c9a84c" stroke="none"/>
+            <circle cx="100" cy="5" r="2.5" fill="#c9a84c" stroke="none"/>
+            <circle cx="188" cy="68" r="2.5" fill="#c9a84c" stroke="none"/>
+            <circle cx="188" cy="132" r="2.5" fill="#c9a84c" stroke="none"/>
+            <circle cx="100" cy="195" r="2.5" fill="#c9a84c" stroke="none"/>
+            <circle cx="12" cy="132" r="2.5" fill="#c9a84c" stroke="none"/>
+            <circle cx="12" cy="68" r="2.5" fill="#c9a84c" stroke="none"/>
+          </g>
+        </svg>
+      </motion.div>
 
-      {/* Subtitle */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="mt-6 text-sm text-white/60"
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+        className="font-garamond italic text-sm tracking-[0.4em] text-gold uppercase mb-4 z-10"
       >
-        — Echoes of Life
+        Words Woven from Starlight & Shadow
+      </motion.p>
+
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.9 }}
+        className="font-cinzel text-5xl md:text-8xl leading-none tracking-tight title-gradient mb-4 z-10"
+      >
+        The Inkbound<br/>Witch
+      </motion.h1>
+
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.9 }}
+        className="font-fell italic text-lg md:text-2xl text-parchment-dim tracking-wider mb-10 z-10"
+      >
+        Some stories are not written… they are felt.
       </motion.p>
 
       <Cat />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: [0, 1, 0.8], y: [0, 6, 0] }}
-        transition={{
-          delay: 6.5, // ⏳ AFTER cat animation (~6s)
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute bottom-10 flex flex-col items-center text-white/60 text-sm"
-      >
-        <span className="tracking-wide">Scroll to explore</span>
 
-        {/* Arrow */}
-        <div className="mt-2 text-lg">↓</div>
+      <motion.div 
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-10 flex flex-col items-center gap-2 opacity-60 text-gold text-xs uppercase tracking-[0.3em] z-10"
+      >
+        <span>↓</span>
+        <span>scroll to enter</span>
       </motion.div>
     </section>
   );
 }
+
