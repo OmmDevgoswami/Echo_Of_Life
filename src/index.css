@@ -1,0 +1,99 @@
+/* Tailwind base */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* RESET + GLOBAL CONTROL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+  background: #0b0b12;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  cursor: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(124, 58, 237, 0.3);
+  color: white;
+}
+
+/* Subtle grain overlay (zine + cinematic feel) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Soft glow utility */
+.glow {
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
+}
+
+/* Text gradient utility */
+.text-glow {
+  background: linear-gradient(to bottom, #ffffff, #9ca3af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth transitions everywhere */
+* {
+  transition: all 0.3s ease;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+}
+
+section {
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar properly */
+html, body {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.hero-font {
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 25px rgba(255,255,255,0.08);
+  font-style: italic;
+}
+
+.zine-frame {
+  clip-path: polygon(
+    5% 0%, 95% 2%, 100% 95%, 2% 100%
+  );
+}
