@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -16,14 +16,20 @@ export default function BlogPost() {
   const [isApplauding, setIsApplauding] = useState(false);
   const navigate = useNavigate();
 
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   useEffect(() => {
     let isMounted = true;
     
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (isMounted) setUser(user);
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (isMounted) setUser(authUser);
       await fetchPost();
-      await fetchInteractions();
     }
 
     load();
@@ -44,26 +50,18 @@ export default function BlogPost() {
        navigate('/blog');
     } else {
        setPost(data);
+       await fetchInteractions(data.id);
     }
     setLoading(false);
   }
 
-  async function fetchInteractions() {
-     if (!post?.id) return;
-     // Fetch counts and comments ONLY FOR THIS POST
-     const { data: appData } = await supabase.from('applauses').select('count').eq('post_id', post.id);
+  async function fetchInteractions(postId) {
+     const { data: appData } = await supabase.from('applauses').select('count').eq('post_id', postId);
      setApplauses(appData?.length || 0);
      
-     const { data: whispData } = await supabase.from('whispers').select('*').eq('post_id', post.id).order('created_at', { ascending: false });
+     const { data: whispData } = await supabase.from('whispers').select('*').eq('post_id', postId).order('created_at', { ascending: false });
      setWhispers(whispData || []);
   }
-
-  // Trigger interaction fetch when post is loaded
-  useEffect(() => {
-    if (post?.id) {
-      fetchInteractions();
-    }
-  }, [post?.id]);
 
   async function handleApplaud() {
     if (!user) return alert("You must join the coven to applaud!");
@@ -86,8 +84,8 @@ export default function BlogPost() {
     }]);
 
     if (!error) {
-      setNewWhisper('');
-      fetchInteractions();
+       setNewWhisper('');
+       fetchInteractions(post.id);
     }
   }
 
@@ -120,25 +118,49 @@ export default function BlogPost() {
     }
   }
 
-  const isAuthor = user !== null; // TEMPORARY FOR TESTING: Any logged-in user is the 'Witch'
+  const isAuthor = user !== null;
 
   if (loading) return <div className="min-h-screen bg-void flex items-center justify-center font-fell text-gold animate-pulse text-2xl tracking-[0.4em]">CONSULTING THE ARCHIVES...</div>;
   if (!post) return null;
 
   return (
-    <div className="min-h-screen bg-void pt-32 pb-48 px-6 md:px-12 relative overflow-x-hidden">
-      <div className="max-w-[850px] mx-auto">
+    <div className="min-h-screen bg-void pt-32 pb-48 px-6 md:px-12 relative overflow-x-hidden selection:bg-gold/30 selection:text-parchment">
+      {/* SCROLL PROGRESS BAR */}
+      <motion.div className="fixed top-0 left-0 right-0 h-1 bg-gold z-[2000] origin-left" style={{ scaleX }} />
+
+      <div className="max-w-[900px] mx-auto">
           <header className="mb-24 text-center">
-            <Link to="/blog" className="font-fell text-gold/40 hover:text-gold text-[10px] uppercase tracking-[0.4em] mb-12 block transition-colors">← Return to Grimoire</Link>
-            <span className="text-xs font-fell text-gold/60 uppercase tracking-[0.4em] glow-gold block mb-4">{post.category}</span>
-            <h1 className="font-cinzel text-5xl md:text-8xl text-parchment mb-8 leading-tight tracking-tighter">{post.title}</h1>
-            <div className="divider mx-auto mb-8"><span className="divider-glyph">✦</span></div>
+            <Link to="/blog" className="font-fell text-gold/40 hover:text-gold text-[10px] uppercase tracking-[0.5em] mb-12 block transition-all">← Return to Grimoire</Link>
+            <span className="text-xs font-fell text-gold/60 uppercase tracking-[0.6em] glow-gold block mb-6">{post.category}</span>
+            <h1 className="font-cinzel text-6xl md:text-9xl text-parchment mb-12 leading-[0.85] tracking-tighter italic">{post.title}</h1>
+            <div className="divider mx-auto mb-12"><span className="divider-glyph">✦</span></div>
           </header>
 
-          <article className="prose-magical font-garamond text-xl md:text-3xl text-parchment/80 leading-relaxed mb-48 text-justify" dangerouslySetInnerHTML={{ __html: post.content }} />
+          {/* COVER IMAGE */}
+          {post.cover_image && (
+             <div className="mb-32">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className="border border-gold/20 p-2 bg-void/50 shadow-2xl">
+                   <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover rounded-sm" />
+                </motion.div>
+                {post.cover_caption && <p className="text-center font-garamond italic text-parchment/30 text-sm mt-6 mb-12 tracking-widest">— {post.cover_caption}</p>}
+             </div>
+          )}
 
-          {/* INTERACTION ZONE (Applauses & Whispers) */}
-          <section className="mb-32 border-t border-gold/10 pt-24">
+          <article className="prose-immersion font-garamond text-2xl md:text-4xl text-parchment/90 leading-[1.6] mb-64 text-justify first-letter:text-7xl first-letter:font-cinzel first-letter:text-gold first-letter:mr-3 first-letter:float-left first-letter:leading-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+
+          {/* AUTHOR BIO (The Sealed Envelope) */}
+          <section className="mb-64 border-t border-gold/10 pt-24 max-w-[600px] mx-auto text-center">
+             <div className="font-fell border-2 border-gold/5 bg-gold/5 p-12 relative group pointer-events-none">
+                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gold text-void px-6 py-2 text-xs tracking-widest font-bold shadow-[0_0_20px_#c9a84c]">THE CHRONICLER</span>
+                <p className="text-parchment/60 font-garamond italic text-xl mb-8 leading-relaxed italic animate-glow">
+                  "I find beauty in the unexpressed words, weaving the starlight of emotions into ink-trails for the brave souls who dare to read."
+                </p>
+                <div className="font-fell text-gold text-sm tracking-widest">— The Witch of Echoes</div>
+             </div>
+          </section>
+
+          {/* INTERACTION ZONE */}
+          <section className="interaction-ritual mb-32 border-t border-gold/10 pt-24">
              <div className="flex flex-col items-center gap-12 mb-24">
                 <motion.button 
                   whileTap={{ scale: 1.2, rotate: 10 }}
@@ -146,44 +168,43 @@ export default function BlogPost() {
                   onClick={handleApplaud}
                   className="group relative flex flex-col items-center gap-4"
                 >
-                  <div className="w-20 h-20 rounded-full border-2 border-gold/20 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/5 transition-all duration-500 shadow-2xl">
-                     <span className="text-3xl grayscale group-hover:grayscale-0 transition-transform duration-500 transform group-hover:rotate-12">👏</span>
+                  <div className="w-24 h-24 rounded-full border-2 border-gold/20 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/10 transition-all duration-700 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                     <span className="text-4xl grayscale group-hover:grayscale-0 transition-transform duration-700 transform group-hover:rotate-12">👏</span>
                   </div>
-                  <span className="font-cinzel text-gold text-lg glow-gold">{applauses} Applauses</span>
-                  {isApplauding && <motion.div initial={{ opacity: 1, y: 0 }} animate={{ opacity: 0, y: -100 }} className="absolute -top-12 text-gold font-fell font-bold tracking-widest">+1 Magic</motion.div>}
+                  <span className="font-cinzel text-gold text-xl tracking-[0.2em]">{applauses} Applauses</span>
                 </motion.button>
              </div>
 
-             <div className="max-w-[600px] mx-auto">
-                <h3 className="font-cinzel text-gold text-xl mb-12 uppercase tracking-widest text-center">Spectral Whispers</h3>
+             <div className="max-w-[700px] mx-auto border border-gold/10 p-12 bg-void/30">
+                <h3 className="font-cinzel text-gold text-xl mb-12 uppercase tracking-[0.4em] text-center border-b border-gold/10 pb-4">Whispers to the Void</h3>
                 
                 {user ? (
-                   <form onSubmit={handleWhisper} className="mb-16">
+                   <form onSubmit={handleWhisper} className="mb-24">
                       <textarea 
-                        placeholder="Whisper your thoughts to the void..."
-                        className="w-full bg-parchment border-2 border-gold/10 p-6 font-garamond text-black placeholder:text-black/30 focus:border-gold/30 focus:ring-0 transition-all outline-none resize-none h-[150px] mb-4 shadow-inner"
+                        placeholder="Leave your whisper..."
+                        className="w-full bg-[#fdfaf3] border-none p-8 font-garamond text-black placeholder:text-black/30 focus:ring-2 focus:ring-gold/30 transition-all outline-none resize-none h-[200px] mb-6 shadow-inner text-2xl"
                         value={newWhisper}
                         onChange={(e) => setNewWhisper(e.target.value)}
                       />
-                      <div className="flex justify-end">
-                         <button type="submit" className="px-12 py-3 bg-gold text-void font-fell uppercase tracking-widest hover:bg-gold-bright transition-all text-xs font-bold">Whisper</button>
+                      <div className="flex justify-center">
+                         <button type="submit" className="px-16 py-4 bg-gold text-void font-fell uppercase tracking-widest hover:bg-gold-bright transition-all text-sm font-bold shadow-xl">Cast Whisper</button>
                       </div>
                    </form>
                 ) : (
-                   <div className="text-center p-12 border border-gold/10 mb-16 bg-gold/5">
-                      <p className="font-fell text-gold/40 uppercase tracking-widest text-xs mb-4">You must join the coven to leave a whisper</p>
-                      <button onClick={() => navigate('/blog')} className="text-gold font-fell uppercase tracking-[0.2em] hover:text-gold-bright transition-colors text-[10px] underline decoration-gold/30 underline-offset-8">Consult the Oracle at the Entrance</button>
+                   <div className="text-center p-16 border border-gold/5 mb-16 bg-gold/5 italic">
+                      <p className="font-fell text-gold/40 uppercase tracking-[0.3em] text-xs mb-6">Join the coven to speak</p>
+                      <button onClick={() => navigate('/blog')} className="text-gold font-fell uppercase tracking-[0.3em] hover:text-gold-bright underline underline-offset-8">Consult at entrance</button>
                    </div>
                 )}
 
-                <div className="space-y-12">
+                <div className="space-y-16">
                    {whispers.map((whisp) => (
-                      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} key={whisp.id} className="border-l border-gold/20 pl-8 py-2">
-                         <div className="flex justify-between items-center mb-4">
-                            <span className="font-fell text-[10px] text-gold/60 uppercase tracking-widest">{whisp.author_email.split('@')[0]}</span>
-                            <span className="font-fell text-[8px] text-gold/20 uppercase tracking-tighter">{new Date(whisp.created_at).toLocaleDateString()}</span>
+                      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} key={whisp.id} className="border-l-2 border-gold/10 pl-12 py-4">
+                         <div className="flex justify-between items-center mb-6">
+                            <span className="font-fell text-xs text-gold/50 uppercase tracking-[0.4em]">{whisp.author_email.split('@')[0]}</span>
+                            <span className="font-fell text-[10px] text-gold/20 uppercase tracking-[0.4em]">{new Date(whisp.created_at).toLocaleDateString()}</span>
                          </div>
-                         <p className="font-garamond text-parchment/70 text-lg leading-relaxed italic">"{whisp.content}"</p>
+                         <p className="font-garamond text-parchment/80 text-2xl leading-relaxed italic">"{whisp.content}"</p>
                       </motion.div>
                    ))}
                 </div>
@@ -192,43 +213,67 @@ export default function BlogPost() {
 
           {/* ADMIN TOOLS */}
           {isAuthor && (
-            <div className="mb-24 p-12 border-2 border-gold/10 bg-void flex flex-wrap justify-between items-center gap-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
-              <div className="flex flex-col gap-4">
-                 <span className="font-fell text-xs text-gold/40 uppercase tracking-[0.4em] font-bold">WITCH'S SANCTUM RITUALS</span>
-                 <p className="font-garamond text-parchment/20 text-xs italic italic">Manage the life-threds of this chronicle</p>
-              </div>
-              <div className="flex items-center gap-8">
-                 <button onClick={togglePin} className={`px-8 py-3 font-fell text-[10px] uppercase tracking-[0.3em] border-2 transition-all shadow-xl ${post.is_pinned ? 'bg-gold text-void border-gold shadow-gold/20' : 'text-gold border-gold/20 hover:border-gold'}`}>
-                    {post.is_pinned ? '✦ Unpin from Chronicles' : '✧ Pin to Chronicles'}
-                 </button>
-                 <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="font-fell text-[10px] uppercase tracking-[0.3em] text-red-500/40 hover:text-red-600 transition-all font-bold">
-                    — The Eternal Fire
-                 </button>
-              </div>
+            <div className="mb-24 p-8 md:p-16 border-4 border-gold/10 bg-void flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+               <div className="flex flex-col gap-4">
+                  <span className="font-fell text-xs text-gold/40 uppercase tracking-[0.5em] font-bold">WITCH'S SANCTUM RITUALS</span>
+                  <p className="font-garamond text-parchment/20 text-xs italic tracking-widest leading-loose">Master of the Chronicles</p>
+               </div>
+               <div className="flex flex-col sm:flex-row items-center gap-8 md:gap-10 w-full md:w-auto">
+                  <button onClick={togglePin} className={`w-full sm:w-auto px-8 py-4 font-fell text-[10px] md:text-[11px] uppercase tracking-[0.5em] border-2 transition-all shadow-2xl ${post.is_pinned ? 'bg-gold text-void border-gold' : 'text-gold border-gold/20 hover:border-gold'}`}>
+                     {post.is_pinned ? '✦ Unpin Chronicle' : '✧ Pin to Fragments'}
+                  </button>
+                  <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="font-fell text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-red-700/60 hover:text-red-600 transition-all font-bold py-4">
+                     — The Eternal Burning
+                  </button>
+               </div>
             </div>
           )}
 
-          {/* DELETE RITUAL OVERLAY */}
           {showDeleteRitual && (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-24 p-8 border-2 border-red-900/40 bg-red-950/20 shadow-[0_0_50px_rgba(153,27,27,0.2)]">
-               <h3 className="font-cinzel text-red-500 text-xl mb-4 text-center tracking-widest">DESTROY THIS CHRONICLED TALE?</h3>
-               <p className="text-center font-garamond text-parchment/40 italic mb-8">This action will erase the ink forever from the void.</p>
-               <input 
-                 type="text" 
-                 placeholder="Type the exact title to confirm"
-                 className="w-full bg-parchment border border-red-900/30 p-4 font-garamond text-black placeholder:text-black/30 focus:border-red-500 focus:ring-0 mb-8 text-center shadow-inner"
-                 value={deleteConfirm}
-                 onChange={(e) => setDeleteConfirm(e.target.value)}
-               />
-               <div className="flex gap-8 justify-center">
-                  <button onClick={() => setShowDeleteRitual(false)} className="text-parchment/40 font-fell text-[10px] uppercase tracking-[0.3em] hover:text-parchment transition-colors">Abandon</button>
-                  <button onClick={handleDelete} className="px-10 py-3 bg-red-900 text-white font-fell text-xs uppercase tracking-[0.3em] hover:bg-red-700 transition-all shadow-xl">
-                    Perform the Burning
-                  </button>
-               </div>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-[3000] flex items-center justify-center bg-void/95 backdrop-blur-xl p-6">
+              <div className="max-w-[500px] w-full p-12 border-2 border-red-900/40 bg-red-950/20 text-center shadow-[0_0_100px_rgba(153,27,27,0.4)]">
+                 <h3 className="font-cinzel text-red-500 text-3xl mb-8 tracking-[0.3em]">EXCOMMUNICATE?</h3>
+                 <p className="font-garamond text-parchment/40 italic mb-12">The starlight will fade. The ink will bleed to nothingness.</p>
+                 <input 
+                   type="text" 
+                   placeholder="Type the title to confirm"
+                   className="w-full bg-[#fdfaf3] border-none p-6 font-garamond text-black mb-12 text-center text-2xl focus:ring-4 focus:ring-red-900/30 shadow-inner"
+                   value={deleteConfirm}
+                   onChange={(e) => setDeleteConfirm(e.target.value)}
+                 />
+                 <div className="flex gap-12 justify-center">
+                    <button onClick={() => setShowDeleteRitual(false)} className="text-parchment/40 font-fell text-xs uppercase tracking-[0.4em] hover:text-parchment">Abandon</button>
+                    <button onClick={handleDelete} className="px-12 py-4 bg-red-900 text-white font-fell text-xs uppercase tracking-[0.5em] hover:bg-red-800 transition-all shadow-2xl">Burn</button>
+                 </div>
+              </div>
             </motion.div>
           )}
       </div>
+
+      <style>{`
+        .prose-immersion blockquote {
+          border-left: 4px solid #c9a84c;
+          padding-left: 2rem;
+          margin: 4rem 0;
+          font-style: italic;
+          color: #f0c96b;
+          font-size: 1.1em;
+          background: rgba(201, 168, 76, 0.05);
+          padding: 2rem 3rem;
+        }
+        .prose-immersion h2, .prose-immersion h3 {
+          font-family: 'Cinzel', serif;
+          color: #c9a84c;
+          margin: 6rem 0 3rem;
+          text-align: center;
+          letter-spacing: 0.2em;
+        }
+        .prose-immersion img {
+          border-radius: 4px;
+          margin: 5rem auto;
+          box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        }
+      `}</style>
     </div>
   );
 }
