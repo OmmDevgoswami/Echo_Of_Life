@@ -1,28 +1,60 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import { Link } from "react-router-dom";
 import MovingStrips from "./MovingStrips";
 
-const stories = [
-  {
-    num: "I",
-    tag: "★ Short Story · Crush · Dreams",
-    title: "Bakery Man",
-    desc: "It was a sunny day as far as I can remember. The scorching sun was hitting my black umbrella as I walked by the roadside. I just got back from the city, so I guess it was Saturday. I was enticed by the smell of bread from the local bakery."
-  },
-  {
-    num: "II",
-    tag: "★ Mental Health · Addiction Recovery",
-    title: "Kumunoy: The Quicksand in my Mind",
-    desc: "I have always thought that kumunoy is a scary type of landform. Once you step onto it, you will be sucked under the earth. The more you struggle, the more it will pull you beneath until you are buried under the ground"
-  },
-  {
-    num: "III",
-    tag: "★ Love · Unexpressed Emotions · Longing",
-    title: "For Eyes to Speak",
-    desc: "I had this thought that I have always believe.\nI think I speak with my eyes.\nI was never good at saying how I feel or what I think. Whenever exhaustion hits me, I shut down. I may move a little but my lips won't cooperate with me."
-  }
-];
-
 export default function Fragments() {
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    async function fetchTopStories() {
+      // Get posts, prioritizing pinned ones
+      let { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('is_pinned', { ascending: false }) // Pinned first
+        .order('created_at', { ascending: false }) // Then latest
+        .limit(3);
+      
+      const romanMap = ["I", "II", "III"];
+      
+      if (!error && data?.length > 0) {
+        setStories(data.slice(0, 3).map((post, index) => ({
+          num: romanMap[index],
+          id: post.id,
+          tag: `★ ${post.category || 'Tale'}`,
+          title: post.title,
+          desc: post.excerpt,
+          slug: post.slug
+        })));
+      } else {
+        // Fallback to static if empty
+        setStories([
+          {
+            num: "I",
+            tag: "★ Short Story · Bakery",
+            title: "Bakery Man",
+            desc: "It was a sunny day as far as I can remember... I was enticed by the smell of bread."
+          },
+          {
+            num: "II",
+            tag: "★ Mental Health",
+            title: "Kumunoy",
+            desc: "I have always thought that kumunoy is a scary type of landform..."
+          },
+          {
+            num: "III",
+            tag: "★ Love",
+            title: "For Eyes to Speak",
+            desc: "I think I speak with my eyes. I was never good at saying how I feel..."
+          }
+        ]);
+      }
+    }
+    fetchTopStories();
+  }, []);
+
   return (
     <section id="stories" className="py-24 px-8 max-w-[1300px] mx-auto relative overflow-hidden">
       <MovingStrips />
@@ -47,22 +79,32 @@ export default function Fragments() {
             <span className="absolute top-4 right-6 font-cinzel text-6xl font-black text-[#c9a84c]/5 select-none transition-colors group-hover:text-[#c9a84c]/10">
               {story.num}
             </span>
-
-            <span className="block font-garamond italic text-xs tracking-widest text-[#7b4fa6] uppercase mb-4">
-              {story.tag}
-            </span>
-            
-            <h3 className="font-fell text-2xl text-parchment mb-4 leading-tight group-hover:text-gold-bright transition-colors">
-              {story.title}
-            </h3>
-            
-            <p className="font-garamond text-parchment/60 leading-relaxed mb-6">
-              {story.desc}
-            </p>
-
-            <span className="inline-flex items-center gap-2 font-garamond italic text-gold text-sm group-hover:gap-4 transition-all">
-              Read the story <span className="text-lg">→</span>
-            </span>
+            <div className="flex flex-col h-full justify-between">
+              <div className="space-y-6">
+                <span className="text-[10px] uppercase tracking-[0.4em] text-gold/60 font-medium block">
+                  {story.tag}
+                </span>
+                <h3 className="text-3xl md:text-4xl font-cinzel text-parchment leading-tight group-hover:text-gold transition-colors duration-500">
+                  {story.title}
+                </h3>
+                <p className="text-parchment/40 font-garamond text-lg leading-relaxed line-clamp-3 italic">
+                  {story.desc}
+                </p>
+              </div>
+              
+              <div className="mt-12 pt-8 border-t border-gold/5 flex justify-between items-center group/btn">
+                <Link 
+                  to={`/blog/${story.slug}`}
+                  className="text-[10px] uppercase tracking-[0.4em] text-gold/40 group-hover/btn:text-gold transition-all duration-500 flex items-center gap-4"
+                >
+                  <span>Read the Story</span>
+                  <span className="w-8 h-[1px] bg-gold/20 group-hover/btn:w-16 group-hover/btn:bg-gold transition-all duration-700"></span>
+                </Link>
+                <span className="text-parchment/5 font-cinzel text-4xl group-hover:text-gold/10 transition-colors duration-700">
+                  ✧
+                </span>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>

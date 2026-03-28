@@ -1,4 +1,5 @@
 import { useScroll, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 import Identity from "../components/Identity";
 import Fragments from "../components/Fragments";
@@ -15,23 +16,7 @@ export default function Home() {
   const { scrollYProgress } = useScroll();
 
   return (
-    <div className="bg-[#0b0b12] text-white overflow-x-hidden selection:bg-purple-500/30">
-      <CustomCursor />
-      <MouseTrail />
-      <MagicBackground />
-      <DotNav />
-
-      {/* PERMANENT LOGO */}
-      <nav className="fixed top-0 left-0 p-8 z-[100] pointer-events-none">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="font-cinzel text-gold text-lg md:text-xl tracking-[0.2em] pointer-events-auto cursor-pointer"
-        >
-          ✦ <span className="hover:text-gold-bright transition-colors">THE INKBOUND WITCH</span>
-        </motion.div>
-      </nav>
-
+    <div className="bg-transparent text-white overflow-x-hidden selection:bg-purple-500/30">
       <section id="hero">
         <Hero />
       </section>
