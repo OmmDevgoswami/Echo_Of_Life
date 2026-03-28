@@ -118,7 +118,7 @@ export default function BlogPost() {
     }
   }
 
-  const isAuthor = user !== null;
+  const isAuthor = user?.email === 'theinkboundwitch@gmail.com';
 
   if (loading) return <div className="min-h-screen bg-void flex items-center justify-center font-fell text-gold animate-pulse text-2xl tracking-[0.4em]">CONSULTING THE ARCHIVES...</div>;
   if (!post) return null;
@@ -131,8 +131,11 @@ export default function BlogPost() {
       <div className="max-w-[900px] mx-auto">
           <header className="mb-24 text-center">
             <Link to="/blog" className="font-fell text-gold/40 hover:text-gold text-[10px] uppercase tracking-[0.5em] mb-12 block transition-all">← Return to Grimoire</Link>
-            <span className="text-xs font-fell text-gold/60 uppercase tracking-[0.6em] glow-gold block mb-6">{post.category}</span>
-            <h1 className="font-cinzel text-6xl md:text-9xl text-parchment mb-12 leading-[0.85] tracking-tighter italic">{post.title}</h1>
+            <span className="text-xs font-fell text-gold/60 uppercase tracking-[0.6em] glow-gold block mb-6 px-12 leading-relaxed">
+               {post.category?.split(/[,\s]+/).join(' • ')}
+            </span>
+            <h1 className="font-cinzel text-6xl md:text-9xl text-parchment mb-6 leading-[0.85] tracking-tighter italic">{post.title}</h1>
+            {post.subtitle && <p className="font-garamond text-2xl md:text-3xl text-parchment/40 italic mb-12 tracking-widest leading-relaxed">"{post.subtitle}"</p>}
             <div className="divider mx-auto mb-12"><span className="divider-glyph">✦</span></div>
           </header>
 
@@ -145,6 +148,7 @@ export default function BlogPost() {
                 {post.cover_caption && <p className="text-center font-garamond italic text-parchment/30 text-sm mt-6 mb-12 tracking-widest">— {post.cover_caption}</p>}
              </div>
           )}
+
 
           <article className="prose-immersion font-garamond text-2xl md:text-4xl text-parchment/90 leading-[1.6] mb-64 text-justify first-letter:text-7xl first-letter:font-cinzel first-letter:text-gold first-letter:mr-3 first-letter:float-left first-letter:leading-none" dangerouslySetInnerHTML={{ __html: post.content }} />
 
@@ -218,11 +222,14 @@ export default function BlogPost() {
                   <span className="font-fell text-xs text-gold/40 uppercase tracking-[0.5em] font-bold">WITCH'S SANCTUM RITUALS</span>
                   <p className="font-garamond text-parchment/20 text-xs italic tracking-widest leading-loose">Master of the Chronicles</p>
                </div>
-               <div className="flex flex-col sm:flex-row items-center gap-8 md:gap-10 w-full md:w-auto">
-                  <button onClick={togglePin} className={`w-full sm:w-auto px-8 py-4 font-fell text-[10px] md:text-[11px] uppercase tracking-[0.5em] border-2 transition-all shadow-2xl ${post.is_pinned ? 'bg-gold text-void border-gold' : 'text-gold border-gold/20 hover:border-gold'}`}>
+               <div className="flex items-center gap-10">
+                  <button onClick={() => navigate(`/blog/edit/${post.slug}`)} className="px-10 py-4 font-fell text-[11px] uppercase tracking-[0.5em] border-2 border-gold/20 hover:border-gold text-gold transition-all shadow-2xl">
+                     ✎ Alter the Ink
+                  </button>
+                  <button onClick={togglePin} className={`px-10 py-4 font-fell text-[11px] uppercase tracking-[0.5em] border-2 transition-all shadow-2xl ${post.is_pinned ? 'bg-gold text-void border-gold' : 'text-gold border-gold/20 hover:border-gold'}`}>
                      {post.is_pinned ? '✦ Unpin Chronicle' : '✧ Pin to Fragments'}
                   </button>
-                  <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="font-fell text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-red-700/60 hover:text-red-600 transition-all font-bold py-4">
+                  <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="font-fell text-[11px] uppercase tracking-[0.5em] text-red-700/60 hover:text-red-700 transition-all font-bold py-4">
                      — The Eternal Burning
                   </button>
                </div>
@@ -268,10 +275,27 @@ export default function BlogPost() {
           text-align: center;
           letter-spacing: 0.2em;
         }
+        .prose-immersion p {
+          margin-bottom: 1.5rem;
+        }
         .prose-immersion img {
           border-radius: 4px;
           margin: 5rem auto;
           box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        }
+        .magical-ink-container p {
+           margin-bottom: 0 !important;
+        }
+        .magical-ink-container p a {
+          color: #c9a84c;
+          text-decoration: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 4px;
+          transition: all 0.3s ease;
+        }
+        .magical-ink-container p a:hover {
+          color: #f0c96b;
+          text-shadow: 0 0 15px rgba(201, 168, 76, 0.4);
         }
       `}</style>
     </div>

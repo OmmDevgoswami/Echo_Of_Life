@@ -70,7 +70,7 @@ export default function Identity() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#4a1f6b] to-[#0d0b12]" />
           
           <img
-            src="/ugc_sunflower.jpg"
+            src="/TwinSis_Pic.jpg"
             alt="The Witch"
             className="w-full h-full object-cover relative z-10 brightness-75 contrast-125 saturate-50 group-hover:brightness-90 transition-all duration-700"
           />

@@ -3,19 +3,22 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Dropcursor from '@tiptap/extension-dropcursor';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { uploadImage } from '../lib/imagekit';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function BlogEditor() {
+  const { slug: editSlug } = useParams();
   const [title, setTitle] = useState('');
+  const [subtitle, setSubtitle] = useState('');
   const [category, setCategory] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [coverCaption, setCoverCaption] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [existingId, setExistingId] = useState(null);
   const coverInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -54,19 +57,54 @@ export default function BlogEditor() {
     },
   });
 
+  useEffect(() => {
+    if (editSlug && editor) {
+      fetchExistingPost();
+    }
+  }, [editSlug, editor]);
+
+  async function fetchExistingPost() {
+    const { data, error } = await supabase.from('posts').select('*').eq('slug', editSlug).maybeSingle();
+    if (data) {
+      setTitle(data.title);
+      setSubtitle(data.subtitle || '');
+      setCategory(data.category || '');
+      setCoverImage(data.cover_image || '');
+      setCoverCaption(data.cover_caption || '');
+      setExistingId(data.id);
+      
+      // We check for editor again just to be safe
+      if (editor) {
+        editor.commands.setContent(data.content);
+      }
+    }
+  }
+
   const handleInTextImageUpload = async (file) => {
     try {
       setIsUploading(true);
       const url = await uploadImage(file);
-      const caption = window.prompt("What is the legend (caption) of this visual?");
+      const caption = window.prompt("The legend of this visual (You can use <a> for links!):");
       
-      editor.chain().focus().insertContent(`
-        <div class="magical-ink-container my-12 text-center">
-          <img src="${url}" class="magical-ink-image mx-auto border border-gold/10 shadow-lg max-h-[400px] object-contain rounded-sm" />
-          ${caption ? `<p class="font-garamond italic text-black/50 text-sm mt-4 tracking-widest">— ${caption}</p>` : ''}
-        </div>
-        <p></p>
-      `).run();
+      editor.chain().focus().insertContent([
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'image',
+              attrs: { src: url, class: 'magical-ink-image mx-auto my-12 border border-gold/10 shadow-lg max-h-[400px]' }
+            }
+          ]
+        },
+        {
+          type: 'paragraph',
+          attrs: { class: 'text-center font-garamond italic text-black/50 text-sm tracking-widest' },
+          content: [
+            { type: 'text', text: '— ' },
+            { type: 'text', text: caption || '' }
+          ]
+        }
+      ]).run();
     } catch (err) {
       alert("The ink-trail broke: " + err.message);
     } finally {
@@ -104,8 +142,9 @@ export default function BlogEditor() {
     setIsSubmitting(true);
     const slug = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
     
-    const { error } = await supabase.from('posts').insert([{
+    const postData = {
       title,
+      subtitle,
       slug,
       category,
       content: editor.getHTML(),
@@ -113,7 +152,16 @@ export default function BlogEditor() {
       cover_caption: coverCaption,
       excerpt: editor.getText().slice(0, 150) + '...',
       is_pinned: false
-    }]);
+    };
+
+    let error;
+    if (existingId) {
+      const { error: err } = await supabase.from('posts').update(postData).eq('id', existingId);
+      error = err;
+    } else {
+      const { error: err } = await supabase.from('posts').insert([postData]);
+      error = err;
+    }
 
     if (error) alert("The spell failed: " + error.message);
     else navigate('/blog');
@@ -131,13 +179,20 @@ export default function BlogEditor() {
       <div className="w-full max-w-[1000px] flex flex-col h-full bg-[#fcf8ef] shadow-[0_50px_100px_rgba(0,0,0,0.6)] relative overflow-hidden">
         
         {/* EDITORIAL HEADER */}
-        <div className="p-12 border-b border-black/5 bg-[#fcf8ef]">
+        <div className="p-12 border-b border-black/10 bg-[#fcf8ef]">
            <input 
              type="text" 
              placeholder="Title of the Tale"
              value={title}
              onChange={(e) => setTitle(e.target.value)}
-             className="w-full bg-transparent border-none p-0 text-5xl md:text-7xl font-cinzel text-black focus:ring-0 placeholder:text-black/10 mb-8"
+             className="w-full bg-transparent border-none p-0 text-5xl md:text-7xl font-cinzel text-black focus:ring-0 placeholder:text-black/30 mb-8"
+           />
+           <input 
+             type="text" 
+             placeholder="The Echo (Subtitle/Hook for this tale...)"
+             value={subtitle}
+             onChange={(e) => setSubtitle(e.target.value)}
+             className="w-full bg-transparent border-none p-0 text-xl font-garamond italic text-black/60 focus:ring-0 placeholder:text-black/40 mt-4 mb-4"
            />
            <div className="flex flex-wrap gap-8 items-center">
              <input 
@@ -145,10 +200,10 @@ export default function BlogEditor() {
                placeholder="Category..."
                value={category}
                onChange={(e) => setCategory(e.target.value)}
-               className="bg-transparent border-b border-black/10 text-xs font-fell uppercase tracking-[0.3em] text-black/60 focus:border-gold focus:ring-0 w-[200px]"
+               className="bg-transparent border-b border-black/20 text-xs font-fell uppercase tracking-[0.3em] text-black/80 focus:border-gold focus:ring-0 w-[200px] placeholder:text-black/40"
              />
-             <div className="hidden md:block h-4 w-[1px] bg-black/10"></div>
-             <button onClick={triggerInTextImagePicker} className="font-fell text-[11px] uppercase tracking-widest text-[#7b4fa6] hover:text-[#5a3a7a] transition-colors flex items-center gap-2 font-bold focus:outline-none">
+             <div className="hidden md:block h-4 w-[1px] bg-black/20"></div>
+             <button onClick={triggerInTextImagePicker} className="font-fell text-[11px] uppercase tracking-widest text-[#5a3a7a] hover:text-[#4a2e63] transition-colors flex items-center gap-2 font-bold focus:outline-none">
                 <span>✦ Invoke Image (Upload)</span>
              </button>
            </div>
@@ -165,7 +220,7 @@ export default function BlogEditor() {
             />
             <div 
               onClick={() => coverInputRef.current.click()}
-              className="w-full min-h-[200px] bg-black/5 border-2 border-dashed border-black/5 flex items-center justify-center cursor-pointer hover:bg-black/10 transition-all group mb-8"
+              className="w-full min-h-[200px] bg-black/5 border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:bg-black/10 transition-all group mb-8"
             >
               {coverImage ? (
                 <div className="w-full relative">
@@ -176,8 +231,8 @@ export default function BlogEditor() {
                 </div>
               ) : (
                 <div className="text-center">
-                   <span className="block text-4xl mb-4 text-black/10 transition-colors group-hover:text-gold/40">✦</span>
-                   <span className="text-xs font-fell uppercase tracking-widest text-black/30">Click to set the Chronicle's Face</span>
+                   <span className="block text-4xl mb-4 text-black/30 transition-colors group-hover:text-gold/60">✦</span>
+                   <span className="text-xs font-fell uppercase tracking-widest text-black/60">Click to set the Chronicle's Face</span>
                 </div>
               )}
             </div>
@@ -219,7 +274,8 @@ export default function BlogEditor() {
       <style>{`
         .custom-editor-area .ProseMirror:focus { outline: none; }
         .prose-edit h1, .prose-edit h2 { font-family: 'Cinzel', serif; color: #3d2b1f; margin-top: 2rem; }
-        .prose-edit p { margin-bottom: 1.5rem; }
+        .prose-edit p { margin-bottom: 1.2rem; }
+        .prose-immersion p { margin-bottom: 1.2rem; }
         .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
           float: left;
