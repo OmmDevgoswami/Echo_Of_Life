@@ -21,54 +21,27 @@ export default function MagicBackground() {
 
   return (
     <div className="rune-field fixed inset-0 pointer-events-none z-0 overflow-hidden bg-void">
-      {/* GLOWING LUNAR ORBS */}
-      <motion.div 
-        animate={{ 
-          opacity: [0.3, 0.5, 0.3],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute -top-[10%] -left-[10%] w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px]"
-      />
-      
+      {/* SHINY DUST */}
+      {Array.from({ length: 40 }).map((_, i) => (
+        <motion.div
+           key={`dust-${i}`}
+           initial={{ opacity: 0, x: Math.random() * 100 + "vw", y: "110vh" }}
+           animate={{ y: "-10vh", opacity: [0, 0.6, 0] }}
+           transition={{ duration: 8 + Math.random() * 12, repeat: Infinity, delay: Math.random() * 20 }}
+           className="absolute w-[2px] h-[2px] bg-gold rounded-full blur-[0.5px]"
+        />
+      ))}
       {/* SPECTRAL MOONS */}
       {[...Array(4)].map((_, i) => (
         <motion.div
           key={`moon-${i}`}
           initial={{ y: "110vh", x: (i * 25) + "vw", opacity: 0 }}
           animate={{ y: "-20vh", opacity: [0, 0.15, 0] }}
-          transition={{ 
-            duration: 40 + (i * 10), 
-            repeat: Infinity, 
-            delay: i * 8,
-            ease: "linear"
-          }}
+          transition={{ duration: 40 + (i * 10), repeat: Infinity, delay: i * 8, ease: "linear" }}
           className="absolute text-gold/20 font-serif text-6xl md:text-9xl pointer-events-none"
         >
           {['☽', '☾', '◯', '◌'][i % 4]}
         </motion.div>
-      ))}
-
-      {/* SHINY DUST */}
-      {Array.from({ length: 40 }).map((_, i) => (
-        <motion.div
-          key={`dust-${i}`}
-          initial={{ 
-            opacity: 0,
-            x: Math.random() * 100 + "vw",
-            y: "110vh"
-          }}
-          animate={{
-            y: "-10vh",
-            opacity: [0, 0.6, 0]
-          }}
-          transition={{
-            duration: 8 + Math.random() * 12,
-            repeat: Infinity,
-            delay: Math.random() * 20
-          }}
-          className="absolute w-[2px] h-[2px] bg-gold rounded-full blur-[0.5px]"
-        />
       ))}
 
       {elements.map((el) => (

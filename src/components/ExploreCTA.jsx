@@ -32,8 +32,8 @@ export default function ExploreCTA() {
       </motion.button>
 
       <footer className="mt-32 w-full pt-8 border-top border-white/5 opacity-30 font-garamond italic text-sm tracking-widest">
-        &copy; 1923 — THE INKBOUND WITCH — ALL RIGHTS RESERVED
+        &copy;THE INKBOUND WITCH — TEAM UNIVERSE — ALL RIGHTS RESERVED
       </footer>
     </section>
   );
-}
+}
