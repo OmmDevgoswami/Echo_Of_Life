@@ -5,7 +5,7 @@ export default function DeepSection() {
     <section className="h-screen flex items-center justify-center text-center px-6">
 
       <SplitTextReveal
-        text="Some stories are not written in ink, but in quiet acts of care."
+        text="May the little witch never lose her magic once again."
         className="text-xl md:text-3xl font-serif max-w-2xl"
       />
 

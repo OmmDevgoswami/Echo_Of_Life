@@ -1,18 +1,39 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Stars from "./Stars";
 import Cat from "./Cat";
+import { useRef } from "react";
 
 export default function Hero() {
+  const containerRef = useRef(null);
+  const { scrollY } = useScroll();
+  
+  // Sigil Transitions
+  const sigilScale = useTransform(scrollY, [0, 500], [1, 0.4]);
+  const sigilOpacity = useTransform(scrollY, [0, 500], [0.9, 0.15]);
+  const sigilY = useTransform(scrollY, [0, 500], [0, -100]);
+  const sigilBlur = useTransform(scrollY, [0, 500], ["0px", "4px"]);
+
   return (
-    <section id="hero" className="min-h-screen flex flex-col items-center justify-center text-center p-8 overflow-hidden relative">
+    <section id="hero" ref={containerRef} className="min-h-screen flex flex-col items-center justify-center text-center p-8 overflow-hidden relative">
       <Stars />
 
-      {/* SIGIL */}
+      {/* SIGIL - FIXED BACKGROUND CONSTANT */}
       <motion.div 
+        style={{ 
+          scale: sigilScale, 
+          opacity: sigilOpacity, 
+          y: sigilY,
+          filter: `blur(${sigilBlur})`,
+          position: "fixed",
+          top: "20%",
+          left: "50%",
+          translateX: "-50%",
+          zIndex: 0
+        }}
         initial={{ rotate: 0 }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        className="sigil w-[220px] h-[220px] mb-8 relative z-10 glow-gold"
+        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        className="sigil w-[280px] h-[280px] md:w-[450px] md:h-[450px] pointer-events-none transition-all glow-gold"
       >
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -60,7 +81,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.9 }}
-        className="font-cinzel text-5xl md:text-8xl leading-none tracking-tight title-gradient mb-4 z-10"
+        className="font-cinzel text-5xl md:text-8xl leading-none tracking-tight title-gradient mb-8 z-10"
       >
         The Inkbound<br/>Witch
       </motion.h1>

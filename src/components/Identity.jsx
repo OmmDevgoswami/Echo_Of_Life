@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 
 export default function Identity() {
   const lines = [
-    "She writes what lingers.",
-    "She heals what is unseen.",
-    "She walks paths most forget.",
-    "She gathers fragments of quiet worlds.",
+    "only the moon listens to my story",
+    "only the moon knows how I truly feel.",
+    "only the moon understands and accepts me.",
+    "If I sing a song of pining for home, would the moon take me back?",
   ];
 
   return (
@@ -70,7 +70,7 @@ export default function Identity() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#4a1f6b] to-[#0d0b12]" />
           
           <img
-            src="/TwinSis_Pic.jpg"
+            src="/TheWitchsPotrait.jpg"
             alt="The Witch"
             className="w-full h-full object-cover relative z-10 brightness-75 contrast-125 saturate-50 group-hover:brightness-90 transition-all duration-700"
           />
@@ -83,9 +83,9 @@ export default function Identity() {
       {/* RIGHT TEXT CONTENT */}
       <div className="about-text space-y-6">
         <div className="section-header !text-left !mb-8">
-          <span className="section-eyebrow">— the inkbound soul —</span>
+          <span className="section-eyebrow">— The Little Witch —</span>
           <h2 className="font-cinzel text-4xl md:text-5xl text-parchment leading-tight">
-            Of Starlight & <em>Shadow</em>
+          Who is In Love with <em>the Moon</em>
           </h2>
           <div className="divider !mx-0 !w-[200px]"><span className="divider-glyph">✦</span></div>
         </div>

@@ -59,8 +59,8 @@ export default function Fragments() {
     <section id="stories" className="py-24 px-8 max-w-[1300px] mx-auto relative overflow-hidden">
       <MovingStrips />
       <div className="section-header mb-16 text-center relative z-10">
-        <span className="section-eyebrow">— woven in moonlight —</span>
-        <h2 className="font-cinzel text-4xl text-parchment glow-gold">Tales from the Dark</h2>
+        <span className="section-eyebrow">— Bleed into the moon —</span>
+        <h2 className="font-cinzel text-4xl text-parchment glow-gold">Buried behind the wings</h2>
         <div className="divider"><span className="divider-glyph">✦</span></div>
       </div>
 
