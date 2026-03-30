@@ -27,8 +27,8 @@ export default function ShelfOfShadows() {
   return (
     <section id="collection" className="py-28 overflow-hidden bg-transparent">
       <div className="section-header mb-16 px-8 text-center">
-        <span className="section-eyebrow">— bound in night —</span>
-        <h2 className="font-cinzel text-4xl text-parchment glow-gold">The Shelf of Shadows</h2>
+        <span className="section-eyebrow">— lingering light from the scepter —</span>
+        <h2 className="font-cinzel text-4xl text-parchment glow-gold">torn paper, vials and spells</h2>
         <div className="divider"><span className="divider-glyph">★</span></div>
       </div>
 

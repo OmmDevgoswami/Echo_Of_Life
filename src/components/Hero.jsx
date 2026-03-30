@@ -74,7 +74,7 @@ export default function Hero() {
         transition={{ delay: 0.3, duration: 0.8 }}
         className="font-garamond italic text-sm tracking-[0.4em] text-gold uppercase mb-4 z-10"
       >
-        Words Woven from Starlight & Shadow
+        into the trail of misty forest
       </motion.p>
 
       <motion.h1 
@@ -92,7 +92,7 @@ export default function Hero() {
         transition={{ delay: 0.8, duration: 0.9 }}
         className="font-fell italic text-lg md:text-2xl text-parchment-dim tracking-wider mb-10 z-10"
       >
-        Some stories are not written… they are felt.
+        Witches and Sages, Moon and Tomes, Shadows and Cloak, <br /> <em> Welcome to my Domain. </em>
       </motion.p>
 
       <Cat />
