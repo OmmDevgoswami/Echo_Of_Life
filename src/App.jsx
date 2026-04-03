@@ -25,7 +25,7 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
             className="font-cinzel text-gold text-lg md:text-xl tracking-[0.2em] pointer-events-auto cursor-pointer"
           >
-            <Link to="/">✦ THE INKBOUND WITCH</Link>
+            <Link to="/">✦ THE SOLITARY WANDERER</Link>
           </motion.div>
           
           <motion.div 

@@ -83,7 +83,7 @@ export default function Hero() {
         transition={{ delay: 0.5, duration: 0.9 }}
         className="font-cinzel text-5xl md:text-8xl leading-none tracking-tight title-gradient mb-8 z-10"
       >
-        The Inkbound<br/>Witch
+        The Solitary<br/>Wanderer
       </motion.h1>
 
       <motion.p 

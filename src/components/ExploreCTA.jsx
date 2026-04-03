@@ -11,7 +11,7 @@ export default function ExploreCTA() {
       </div>
 
       <p className="font-garamond italic text-xl text-parchment/60 max-w-lg mb-12">
-        "Some doors are only visible to those who know where the silence ends."
+        "Which Path are You Willing to Take?"
       </p>
 
       <motion.button
@@ -32,7 +32,7 @@ export default function ExploreCTA() {
       </motion.button>
 
       <footer className="mt-32 w-full pt-8 border-top border-white/5 opacity-30 font-garamond italic text-sm tracking-widest">
-        &copy;THE INKBOUND WITCH — TEAM UNIVERSE — ALL RIGHTS RESERVED
+        &copy;THE SOLITARY WANDERER  — TEAM UNIVERSE — ALL RIGHTS RESERVED
       </footer>
     </section>
   );
