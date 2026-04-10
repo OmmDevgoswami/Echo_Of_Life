@@ -37,7 +37,12 @@ body {
   font-family: 'Cormorant Garamond', serif;
   font-size: 18px;
   overflow-x: hidden;
-  cursor: none;
+}
+
+@media (min-width: 768px) {
+  body {
+    cursor: none;
+  }
 }
 
 /* Hide scrollbar */

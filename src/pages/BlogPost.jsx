@@ -124,91 +124,91 @@ export default function BlogPost() {
   if (!post) return null;
 
   return (
-    <div className="min-h-screen bg-void pt-32 pb-48 px-6 md:px-12 relative overflow-x-hidden selection:bg-gold/30 selection:text-parchment">
+    <div className="min-h-screen bg-void pt-40 md:pt-32 pb-48 px-4 md:px-12 relative overflow-x-hidden selection:bg-gold/30 selection:text-parchment">
       {/* SCROLL PROGRESS BAR */}
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-gold z-[2000] origin-left" style={{ scaleX }} />
 
       <div className="max-w-[900px] mx-auto">
-          <header className="mb-24 text-center">
-            <Link to="/blog" className="font-fell text-gold/40 hover:text-gold text-[10px] uppercase tracking-[0.5em] mb-12 block transition-all">← Return to Grimoire</Link>
-            <span className="text-xs font-fell text-gold/60 uppercase tracking-[0.6em] glow-gold block mb-6 px-12 leading-relaxed">
+          <header className="mb-16 md:mb-24 text-center">
+            <Link to="/blog" className="font-fell text-gold/40 hover:text-gold text-[10px] uppercase tracking-[0.5em] mb-8 md:mb-12 block transition-all">← Return to Grimoire</Link>
+            <span className="text-[10px] md:text-xs font-fell text-gold/60 uppercase tracking-[0.4em] md:tracking-[0.6em] glow-gold block mb-6 px-4 md:px-12 leading-relaxed">
                {post.category?.split(/[,\s]+/).join(' • ')}
             </span>
-            <h1 className="font-cinzel text-6xl md:text-9xl text-parchment mb-6 leading-[0.85] tracking-tighter italic">{post.title}</h1>
-            {post.subtitle && <p className="font-garamond text-2xl md:text-3xl text-parchment/40 italic mb-12 tracking-widest leading-relaxed">"{post.subtitle}"</p>}
+            <h1 className="font-cinzel text-5xl md:text-9xl text-parchment mb-6 leading-tight md:leading-[0.85] tracking-tight md:tracking-tighter italic">{post.title}</h1>
+            {post.subtitle && <p className="font-garamond text-xl md:text-3xl text-parchment/40 italic mb-12 tracking-widest leading-relaxed">"{post.subtitle}"</p>}
             <div className="divider mx-auto mb-12"><span className="divider-glyph">✦</span></div>
           </header>
 
           {/* COVER IMAGE */}
           {post.cover_image && (
-             <div className="mb-32">
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className="border border-gold/20 p-2 bg-void/50 shadow-2xl">
+             <div className="mb-24 md:mb-32">
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} className="border border-gold/20 p-1 md:p-2 bg-void/50 shadow-2xl">
                    <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover rounded-sm" />
                 </motion.div>
-                {post.cover_caption && <p className="text-center font-garamond italic text-parchment/30 text-sm mt-6 mb-12 tracking-widest">— {post.cover_caption}</p>}
+                {post.cover_caption && <p className="text-center font-garamond italic text-parchment/30 text-xs md:text-sm mt-6 mb-12 tracking-widest">— {post.cover_caption}</p>}
              </div>
           )}
 
 
-          <article className="prose-immersion font-garamond text-2xl md:text-4xl text-parchment/90 leading-[1.6] mb-64 text-justify first-letter:text-7xl first-letter:font-cinzel first-letter:text-gold first-letter:mr-3 first-letter:float-left first-letter:leading-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <article className="prose-immersion font-garamond text-xl md:text-2xl text-parchment/90 leading-[1.6] mb-48 md:mb-64 text-left md:text-justify first-letter:text-6xl md:first-letter:text-7xl first-letter:font-cinzel first-letter:text-gold first-letter:mr-3 first-letter:float-left first-letter:leading-none relative z-10" dangerouslySetInnerHTML={{ __html: post.content }} />
 
           {/* AUTHOR BIO (The Sealed Envelope) */}
-          <section className="mb-64 border-t border-gold/10 pt-24 max-w-[600px] mx-auto text-center">
-             <div className="font-fell border-2 border-gold/5 bg-gold/5 p-12 relative group pointer-events-none">
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gold text-void px-6 py-2 text-xs tracking-widest font-bold shadow-[0_0_20px_#c9a84c]">THE CHRONICLER</span>
-                <p className="text-parchment/60 font-garamond italic text-xl mb-8 leading-relaxed italic animate-glow">
+          <section className="mb-48 md:mb-64 border-t border-gold/10 pt-24 max-w-[600px] mx-auto text-center">
+             <div className="font-fell border-2 border-gold/5 bg-gold/5 p-8 md:p-12 relative group">
+                <span className="absolute -top-5 md:top-[-1.5rem] left-1/2 -translate-x-1/2 bg-gold text-void px-4 md:px-6 py-2 text-[10px] md:text-xs tracking-widest font-bold shadow-[0_0_20px_#c9a84c] whitespace-nowrap">THE CHRONICLER</span>
+                <p className="text-parchment/60 font-garamond italic text-lg md:text-xl mb-8 leading-relaxed italic animate-glow">
                   "I find beauty in the unexpressed words, weaving the starlight of emotions into ink-trails for the brave souls who dare to read."
                 </p>
-                <div className="font-fell text-gold text-sm tracking-widest">— The Witch of Echoes</div>
+                <div className="font-fell text-gold text-[10px] md:text-sm tracking-widest uppercase">— The Witch of Echoes</div>
              </div>
           </section>
 
           {/* INTERACTION ZONE */}
-          <section className="interaction-ritual mb-32 border-t border-gold/10 pt-24">
-             <div className="flex flex-col items-center gap-12 mb-24">
+          <section className="interaction-ritual mb-24 md:mb-32 border-t border-gold/10 pt-16 md:pt-24">
+             <div className="flex flex-col items-center gap-8 md:gap-12 mb-16 md:mb-24">
                 <motion.button 
                   whileTap={{ scale: 1.2, rotate: 10 }}
                   animate={isApplauding ? { y: [0, -20, 0] } : {}}
                   onClick={handleApplaud}
                   className="group relative flex flex-col items-center gap-4"
                 >
-                  <div className="w-24 h-24 rounded-full border-2 border-gold/20 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/10 transition-all duration-700 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-                     <span className="text-4xl grayscale group-hover:grayscale-0 transition-transform duration-700 transform group-hover:rotate-12">👏</span>
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-gold/20 flex items-center justify-center group-hover:border-gold group-hover:bg-gold/10 transition-all duration-700 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                     <span className="text-3xl md:text-4xl grayscale group-hover:grayscale-0 transition-transform duration-700 transform group-hover:rotate-12">👏</span>
                   </div>
-                  <span className="font-cinzel text-gold text-xl tracking-[0.2em]">{applauses} Applauses</span>
+                  <span className="font-cinzel text-gold text-lg md:text-xl tracking-[0.2em]">{applauses} Applauses</span>
                 </motion.button>
              </div>
 
-             <div className="max-w-[700px] mx-auto border border-gold/10 p-12 bg-void/30">
-                <h3 className="font-cinzel text-gold text-xl mb-12 uppercase tracking-[0.4em] text-center border-b border-gold/10 pb-4">Whispers to the Void</h3>
+             <div className="max-w-[700px] mx-auto border border-gold/10 p-6 md:p-12 bg-void/30">
+                <h3 className="font-cinzel text-gold text-lg md:text-xl mb-8 md:mb-12 uppercase tracking-[0.3em] md:tracking-[0.4em] text-center border-b border-gold/10 pb-4">Whispers to the Void</h3>
                 
                 {user ? (
-                   <form onSubmit={handleWhisper} className="mb-24">
+                   <form onSubmit={handleWhisper} className="mb-16 md:mb-24">
                       <textarea 
                         placeholder="Leave your whisper..."
-                        className="w-full bg-[#fdfaf3] border-none p-8 font-garamond text-black placeholder:text-black/30 focus:ring-2 focus:ring-gold/30 transition-all outline-none resize-none h-[200px] mb-6 shadow-inner text-2xl"
+                        className="w-full bg-[#fdfaf3] border-none p-6 md:p-8 font-garamond text-black placeholder:text-black/30 focus:ring-2 focus:ring-gold/30 transition-all outline-none resize-none h-[150px] md:h-[200px] mb-6 shadow-inner text-xl md:text-2xl"
                         value={newWhisper}
                         onChange={(e) => setNewWhisper(e.target.value)}
                       />
                       <div className="flex justify-center">
-                         <button type="submit" className="px-16 py-4 bg-gold text-void font-fell uppercase tracking-widest hover:bg-gold-bright transition-all text-sm font-bold shadow-xl">Cast Whisper</button>
+                         <button type="submit" className="px-10 md:px-16 py-3 md:py-4 bg-gold text-void font-fell uppercase tracking-widest hover:bg-gold-bright transition-all text-xs md:text-sm font-bold shadow-xl">Cast Whisper</button>
                       </div>
                    </form>
                 ) : (
-                   <div className="text-center p-16 border border-gold/5 mb-16 bg-gold/5 italic">
-                      <p className="font-fell text-gold/40 uppercase tracking-[0.3em] text-xs mb-6">Join the coven to speak</p>
-                      <button onClick={() => navigate('/blog')} className="text-gold font-fell uppercase tracking-[0.3em] hover:text-gold-bright underline underline-offset-8">Consult at entrance</button>
+                   <div className="text-center p-8 md:p-16 border border-gold/5 mb-12 md:mb-16 bg-gold/5 italic">
+                      <p className="font-fell text-gold/40 uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs mb-4 md:mb-6">Join the coven to speak</p>
+                      <button onClick={() => navigate('/blog')} className="text-gold font-fell uppercase tracking-[0.2em] md:tracking-[0.3em] hover:text-gold-bright underline underline-offset-8 text-xs">Consult at entrance</button>
                    </div>
                 )}
 
-                <div className="space-y-16">
+                <div className="space-y-12 md:space-y-16">
                    {whispers.map((whisp) => (
-                      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} key={whisp.id} className="border-l-2 border-gold/10 pl-12 py-4">
-                         <div className="flex justify-between items-center mb-6">
-                            <span className="font-fell text-xs text-gold/50 uppercase tracking-[0.4em]">{whisp.author_email.split('@')[0]}</span>
-                            <span className="font-fell text-[10px] text-gold/20 uppercase tracking-[0.4em]">{new Date(whisp.created_at).toLocaleDateString()}</span>
+                      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} key={whisp.id} className="border-l-2 border-gold/10 pl-8 md:pl-12 py-4">
+                         <div className="flex justify-between items-center mb-4 md:mb-6">
+                            <span className="font-fell text-[10px] md:text-xs text-gold/50 uppercase tracking-[0.3em] md:tracking-[0.4em]">{whisp.author_email.split('@')[0]}</span>
+                            <span className="font-fell text-[8px] md:text-[10px] text-gold/20 uppercase tracking-[0.3em] md:tracking-[0.4em]">{new Date(whisp.created_at).toLocaleDateString()}</span>
                          </div>
-                         <p className="font-garamond text-parchment/80 text-2xl leading-relaxed italic">"{whisp.content}"</p>
+                         <p className="font-garamond text-parchment/80 text-xl md:text-2xl leading-relaxed italic">"{whisp.content}"</p>
                       </motion.div>
                    ))}
                 </div>
@@ -217,19 +217,19 @@ export default function BlogPost() {
 
           {/* ADMIN TOOLS */}
           {isAuthor && (
-            <div className="mb-24 p-8 md:p-16 border-4 border-gold/10 bg-void flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
-               <div className="flex flex-col gap-4">
-                  <span className="font-fell text-xs text-gold/40 uppercase tracking-[0.5em] font-bold">WITCH'S SANCTUM RITUALS</span>
-                  <p className="font-garamond text-parchment/20 text-xs italic tracking-widest leading-loose">Master of the Chronicles</p>
+            <div className="mb-24 p-6 md:p-16 border-2 md:border-4 border-gold/10 bg-void flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12 text-center md:text-left">
+               <div className="flex flex-col gap-2 md:gap-4">
+                  <span className="font-fell text-[10px] md:text-xs text-gold/40 uppercase tracking-[0.3em] md:tracking-[0.5em] font-bold">WITCH'S SANCTUM RITUALS</span>
+                  <p className="font-garamond text-parchment/20 text-[10px] md:text-xs italic tracking-widest leading-loose">Master of the Chronicles</p>
                </div>
-               <div className="flex items-center gap-10">
-                  <button onClick={() => navigate(`/blog/edit/${post.slug}`)} className="px-10 py-4 font-fell text-[11px] uppercase tracking-[0.5em] border-2 border-gold/20 hover:border-gold text-gold transition-all shadow-2xl">
+               <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-10 w-full md:w-auto">
+                  <button onClick={() => navigate(`/blog/edit/${post.slug}`)} className="w-full sm:w-auto px-8 py-3 font-fell text-[10px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] border border-gold/20 hover:border-gold text-gold transition-all shadow-2xl">
                      ✎ Alter the Ink
                   </button>
-                  <button onClick={togglePin} className={`px-10 py-4 font-fell text-[11px] uppercase tracking-[0.5em] border-2 transition-all shadow-2xl ${post.is_pinned ? 'bg-gold text-void border-gold' : 'text-gold border-gold/20 hover:border-gold'}`}>
+                  <button onClick={togglePin} className={`w-full sm:w-auto px-8 py-3 font-fell text-[10px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] border transition-all shadow-2xl ${post.is_pinned ? 'bg-gold text-void border-gold' : 'text-gold border-gold/20 hover:border-gold'}`}>
                      {post.is_pinned ? '✦ Unpin Chronicle' : '✧ Pin to Fragments'}
                   </button>
-                  <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="font-fell text-[11px] uppercase tracking-[0.5em] text-red-700/60 hover:text-red-700 transition-all font-bold py-4">
+                  <button onClick={() => setShowDeleteRitual(!showDeleteRitual)} className="w-full sm:w-auto font-fell text-[10px] md:text-[11px] uppercase tracking-[0.3em] md:tracking-[0.5em] text-red-700/60 hover:text-red-700 transition-all font-bold py-3 md:py-4">
                      — The Eternal Burning
                   </button>
                </div>
@@ -260,28 +260,45 @@ export default function BlogPost() {
       <style>{`
         .prose-immersion blockquote {
           border-left: 4px solid #c9a84c;
-          padding-left: 2rem;
-          margin: 4rem 0;
+          padding: 1.5rem 2rem;
+          margin: 2rem 0;
           font-style: italic;
           color: #f0c96b;
           font-size: 1.1em;
           background: rgba(201, 168, 76, 0.05);
-          padding: 2rem 3rem;
+        }
+        @media (min-width: 768px) {
+          .prose-immersion blockquote {
+            padding: 2rem 3rem;
+            margin: 4rem 0;
+          }
         }
         .prose-immersion h2, .prose-immersion h3 {
           font-family: 'Cinzel', serif;
           color: #c9a84c;
-          margin: 6rem 0 3rem;
+          margin: 3rem 0 1.5rem;
           text-align: center;
           letter-spacing: 0.2em;
+          font-size: 1.8rem;
+        }
+        @media (min-width: 768px) {
+          .prose-immersion h2, .prose-immersion h3 {
+            margin: 6rem 0 3rem;
+            font-size: 2.2rem;
+          }
         }
         .prose-immersion p {
           margin-bottom: 1.5rem;
         }
         .prose-immersion img {
           border-radius: 4px;
-          margin: 5rem auto;
+          margin: 2rem auto;
           box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+        }
+        @media (min-width: 768px) {
+          .prose-immersion img {
+            margin: 5rem auto;
+          }
         }
         .magical-ink-container p {
            margin-bottom: 0 !important;

@@ -72,27 +72,27 @@ export default function Fragments() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.2, duration: 0.6 }}
             whileHover={{ y: -10, rotate: -0.5 }}
-            className="story-card group relative bg-gradient-to-br from-[#1e1432]/80 to-[#0a0814]/90 border border-[#c9a84c]/15 p-10 rounded-sm cursor-pointer hover:border-[#c9a84c]/45"
+            className="story-card group relative bg-gradient-to-br from-[#1e1432]/80 to-[#0a0814]/90 border border-[#c9a84c]/15 p-6 md:p-10 rounded-sm cursor-pointer hover:border-[#c9a84c]/45"
             style={{ transition: "all 0.4s cubic-bezier(0.23,1,0.32,1)" }}
           >
             {/* LARGE NUMBER BACKGROUND */}
-            <span className="absolute top-4 right-6 font-cinzel text-6xl font-black text-[#c9a84c]/5 select-none transition-colors group-hover:text-[#c9a84c]/10">
+            <span className="absolute top-4 right-6 font-cinzel text-5xl md:text-6xl font-black text-[#c9a84c]/5 select-none transition-colors group-hover:text-[#c9a84c]/10">
               {story.num}
             </span>
             <div className="flex flex-col h-full justify-between">
-              <div className="space-y-6">
-                <span className="text-[10px] uppercase tracking-[0.4em] text-gold/60 font-medium block">
+              <div className="space-y-4 md:space-y-6">
+                <span className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-gold/60 font-medium block">
                   {story.tag}
                 </span>
-                <h3 className="text-3xl md:text-4xl font-cinzel text-parchment leading-tight group-hover:text-gold transition-colors duration-500">
+                <h3 className="text-2xl md:text-4xl font-cinzel text-parchment leading-tight group-hover:text-gold transition-colors duration-500">
                   {story.title}
                 </h3>
-                <p className="text-parchment/40 font-garamond text-lg leading-relaxed line-clamp-3 italic">
+                <p className="text-parchment/40 font-garamond text-base md:text-lg leading-relaxed line-clamp-3 italic">
                   {story.desc}
                 </p>
               </div>
               
-              <div className="mt-12 pt-8 border-t border-gold/5 flex justify-between items-center group/btn">
+              <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gold/5 flex justify-between items-center group/btn">
                 <Link 
                   to={`/blog/${story.slug}`}
                   className="text-[10px] uppercase tracking-[0.4em] text-gold/40 group-hover/btn:text-gold transition-all duration-500 flex items-center gap-4"

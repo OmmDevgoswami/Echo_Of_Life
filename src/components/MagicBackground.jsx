@@ -7,22 +7,34 @@ export default function MagicBackground() {
   const [elements, setElements] = useState([]);
 
   useEffect(() => {
-    const newElements = Array.from({ length: 25 }).map((_, i) => ({
+    const isMobile = window.innerWidth < 768;
+    const runeCount = isMobile ? 12 : 25;
+    const dustCount = isMobile ? 20 : 40;
+
+    const newElements = Array.from({ length: runeCount }).map((_, i) => ({
       id: i,
       char: runes[Math.floor(Math.random() * runes.length)],
       left: Math.random() * 100 + "vw",
       duration: 30 + Math.random() * 40 + "s",
       delay: Math.random() * -40 + "s",
-      fontSize: 0.8 + Math.random() * 2.5 + "rem",
+      fontSize: (isMobile ? 0.6 : 0.8) + Math.random() * (isMobile ? 1.5 : 2.5) + "rem",
       opacity: 0.02 + Math.random() * 0.08
     }));
     setElements(newElements);
+    
+    // Store dust count in a ref or local variable if needed, 
+    // but here we can just use the constant in the render if we want.
+    // However, since we use Array.from in render, let's just make it a state or variable.
   }, []);
+
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  const dustCount = isMobile ? 20 : 40;
+  const moonCount = isMobile ? 2 : 4;
 
   return (
     <div className="rune-field fixed inset-0 pointer-events-none z-0 overflow-hidden bg-void">
       {/* SHINY DUST */}
-      {Array.from({ length: 40 }).map((_, i) => (
+      {Array.from({ length: dustCount }).map((_, i) => (
         <motion.div
            key={`dust-${i}`}
            initial={{ opacity: 0, x: Math.random() * 100 + "vw", y: "110vh" }}
@@ -32,10 +44,10 @@ export default function MagicBackground() {
         />
       ))}
       {/* SPECTRAL MOONS */}
-      {[...Array(4)].map((_, i) => (
+      {[...Array(moonCount)].map((_, i) => (
         <motion.div
           key={`moon-${i}`}
-          initial={{ y: "110vh", x: (i * 25) + "vw", opacity: 0 }}
+          initial={{ y: "110vh", x: (i * (100 / moonCount)) + "vw", opacity: 0 }}
           animate={{ y: "-20vh", opacity: [0, 0.15, 0] }}
           transition={{ duration: 40 + (i * 10), repeat: Infinity, delay: i * 8, ease: "linear" }}
           className="absolute text-gold/20 font-serif text-6xl md:text-9xl pointer-events-none"

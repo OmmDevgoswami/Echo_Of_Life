@@ -19,11 +19,11 @@ export default function App() {
         <DotNav />
 
         {/* PERMANENT LOGO & NAV */}
-        <nav className="fixed top-0 left-0 right-0 p-8 z-[100] flex justify-between items-center pointer-events-none">
+        <nav className="fixed top-0 left-0 right-0 p-4 md:p-8 z-[100] flex justify-between items-center pointer-events-none">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="font-cinzel text-gold text-lg md:text-xl tracking-[0.2em] pointer-events-auto cursor-pointer"
+            className="font-cinzel text-gold text-sm md:text-xl tracking-[0.2em] pointer-events-auto cursor-pointer"
           >
             <Link to="/">✦ THE SOLITARY WANDERER</Link>
           </motion.div>
@@ -31,9 +31,9 @@ export default function App() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex gap-8 items-center pointer-events-auto"
+            className="flex gap-4 md:gap-8 items-center pointer-events-auto"
           >
-            <Link to="/blog" className="font-fell text-gold/60 hover:text-gold uppercase tracking-[0.2em] text-sm transition-all duration-300">
+            <Link to="/blog" className="font-fell text-gold/60 hover:text-gold uppercase tracking-[0.1em] md:tracking-[0.2em] text-[10px] md:text-sm transition-all duration-300">
               The Grimoire
             </Link>
           </motion.div>
